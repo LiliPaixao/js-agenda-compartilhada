@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<style>
+    .alert {
+    padding: 15px;
+    border: 1px solid #d6e9c6;
+    border-radius: 4px;
+    color: #3c763d;
+    background-color: #dff0d8;
+    }
+</style>
+
+<html>
+<body>
+    <ol id="ol">
+        <li>0</li>
+        <li>1</li>
+        <li>2</li>
+    </ol>
+
+    <div id="divp">
+        <p>Aqui é a div</p>
+    </div>
+
+    <script>
+        ol.before('before')
+        ol.after('after')
+
+        let liFirst = document.createElement('li')
+        liFirst.innerHTML = 'antes do zero'
+        ol.prepend(liFirst)
+
+        let liAppend = document.createElement('li')
+        liAppend.innerHTML = 'depois do último'
+        ol.append(liAppend)
+
+
+        //create div
+        let div = document.createElement('div')
+
+        //Definir a classe
+        div.className = "alert"
+
+        //Preencher com conteúdo
+        div.innerHTML = "<strong>Hi there!</strong> You've read an important message."
+
+        //Inserir
+        document.body.append(div)
+
+        //Não utilizado
+        let textNode = document.createTextNode('Here I am')
+
+        //
+        let createDiv = document.createElement('p')
+        createDiv.innerHTML = '<strong>Hello</strong>'
+        divp.before(createDiv)
+
+        let line =  document.createElement('hr')
+        divp.before(line)
+
+        //insere a partir de uma string
+        div.insertAdjacentHTML('beforebegin', `<div id ="hot" class="alert">
+        <strong>Hi there!</strong> You've read an hot message.
+        </div>`)
+
+        document.body.append(div)
+        setTimeout(() => div.remove(), 1000)
+
+        let divId = document.querySelector('#hot')
+        setTimeout(() => divId.remove(), 1000)
+
+    </script>
+</body>
+    
+</html>

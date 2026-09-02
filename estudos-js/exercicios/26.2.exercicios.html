@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <ol id="elem">
+            <li>Hello</li>
+            <li>World</li>
+        </ol>
+        <script>
+            //elementos com id ficam acessiveis como variável global com o mesmo nome
+            function clear(qualquerNome) {
+                
+                qualquerNome.innerHTML=""
+            }
+            //elem é a variável do escopo global
+            clear(elem);
+        </script>
+    </body>
+</html>
+
+

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div class="one">
+
+        </div>
+        <div class="two">
+
+        </div>
+        <div class="three">
+
+        </div>
+        <script>
+            let text = "<b>Oi</b>"
+
+            //selecionar pela classe
+            let elem1 = document.querySelector('.one')
+
+            let elem2 = document.querySelector('.two')
+
+            let elem3 = document.querySelector('.three')
+
+            
+            elem1.append(document.createTextNode(text)) //cria nó e  depois coloca na div one
+
+            elem2.innerHTML = text // único que interpretou  - só atribui um valor à propriedade textContent da div
+
+            elem3.textContent = text
+        </script>
+    </body>
+</html>
+
+

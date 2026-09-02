@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dia 28 — Introdução a eventos + addEventListener</title>
+<style>
+  body { font-family: sans-serif; max-width: 700px; margin: 40px auto; line-height: 1.5; padding: 0 16px; }
+  section { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+  h2 { margin-top: 0; font-size: 16px; }
+  .task { background: #f5f5f5; padding: 10px; border-left: 3px solid #999; font-size: 14px; margin-bottom: 12px; white-space: pre-wrap; }
+  button { margin-right: 6px; margin-bottom: 6px; }
+  #log { background: #111; color: #0f0; font-family: monospace; padding: 10px; height: 140px; overflow-y: auto; white-space: pre-wrap; font-size: 12px; }
+  .hide {
+    display: none;
+  }
+
+  /* apoio visual */
+  .caixa { width: 160px; height: 60px; background: lightblue; margin: 10px 0; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; user-select: none; border-radius: 4px; }
+  .destaque { border: 3px solid orange; }
+  #campo { width: 300px; height: 200px; background: #e8f4e8; border: 2px solid #4a9; border-radius: 8px; position: relative; overflow: hidden; margin: 10px 0; display: flex; align-items: center; justify-content: center; color: #555; font-size: 13px; cursor: crosshair; }
+  #bola { width: 30px; height: 30px; background: tomato; border-radius: 50%; position: absolute; display: none; transform: translate(-50%, -50%); pointer-events: none; }
+  #menu-wrap { margin: 10px 0; }
+  #menu-titulo { cursor: pointer; font-weight: bold; background: #ddf; padding: 8px 12px; border-radius: 4px; display: inline-block; user-select: none; }
+  #menu-lista { display: none; list-style: none; padding: 0; margin: 4px 0 0; border: 1px solid #aac; border-radius: 4px; overflow: hidden; }
+  #menu-lista li { padding: 8px 12px; background: #f0f4ff; border-bottom: 1px solid #dde; font-size: 14px; }
+  #mensagens { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+  .msg { background: #fffbe6; border: 1px solid #f0c040; border-radius: 6px; padding: 10px 12px; font-size: 14px; position: relative; }
+  .msg-fechar { position: absolute; top: 6px; right: 8px; cursor: pointer; font-size: 16px; line-height: 1; background: none; border: none; color: #888; }
+  .msg-fechar:hover { color: #c00; }
+</style>
+</head>
+<body>
+
+<h1>Dia 28 — Introdução a eventos + addEventListener</h1>
+
+<p><strong>Status:</strong> exercícios 8 ainda pendentes.</p>
+
+
+<p>Preencha cada função no &lt;script&gt; no final do arquivo. Use os botões pra testar. Tudo que você fizer com <code>console.log</code> aparece na caixinha preta abaixo também.</p>
+
+<div id="log"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>1. Três formas de atribuir um handler — e a armadilha dos parênteses</h2>
+  <div class="caixa" id="caixa1">clique aqui</div>
+  <div class="task">Existem 3 formas de atribuir um handler:
+  a) atributo HTML:  onclick="minhaFuncao()"
+  b) propriedade DOM: elem.onclick = minhaFuncao   ← sem parênteses!
+  c) addEventListener: elem.addEventListener('click', minhaFuncao)
+
+TODO: implemente atribuirHandler().
+  - Pegue #caixa1
+  - Atribua um handler via propriedade DOM (elem.onclick = ...)
+  - O handler deve logar: "caixa1 clicada (via propriedade DOM)"
+  - ATENÇÃO: atribua a FUNÇÃO, não o resultado da chamada dela.
+    Teste a diferença: o que acontece se você colocar parênteses no fim?
+
+TODO: implemente removerHandler().
+  - Zere o handler: elem.onclick = null</div>
+  <button onclick="atribuirHandler()">atribuir handler</button>
+  <button onclick="removerHandler()">remover handler (onclick = null)</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>2. addEventListener — múltiplos handlers no mesmo evento</h2>
+  <div class="caixa" id="caixa2">clique aqui</div>
+  <div class="task">Com propriedade DOM (elem.onclick) você só pode ter UM handler — o segundo sobrescreve o primeiro.
+Com addEventListener você pode ter QUANTOS quiser.
+
+TODO: implemente adicionarDoisHandlers().
+  - Pegue #caixa2
+  - Adicione um handler com addEventListener que loga: "handler 1 — borda laranja!"
+    e também adiciona a classe "destaque" na caixa
+  - Adicione um segundo handler com addEventListener que loga: "handler 2 — texto!"
+    e também muda o textContent da caixa para "oi!"
+  - Ambos devem disparar no mesmo clique.
+
+TODO: implemente testeOnclickSobrescreve().
+  - Atribua elem.onclick duas vezes com funções diferentes.
+  - Observe que só a segunda dispara. Logue algo em cada uma pra ver.</div>
+  <button onclick="adicionarDoisHandlers()">adicionar 2 handlers com addEventListener</button>
+  <button onclick="testeOnclickSobrescreve()">testar: onclick sobrescreve</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>3. O objeto event — type, target, currentTarget</h2>
+  <div id="area-eventos" style="padding:20px;background:#f0f0f0;border-radius:6px;margin:10px 0;cursor:pointer;">
+    <p style="margin:0;font-size:14px;">Clique em mim, ou nos filhos:</p>
+    <button id="btn-filho">botão filho</button>
+    <span id="span-filho" style="padding:4px 8px;background:#ddf;border-radius:3px;cursor:pointer;">span filho</span>
+  </div>
+  <div class="task">O browser passa um objeto "event" automaticamente pro handler.
+Propriedades mais importantes:
+  event.type        — nome do evento ("click", "mouseover"...)
+  event.target      — quem foi clicado de verdade (o elemento mais interno)
+  event.currentTarget — quem tem o handler registrado
+
+TODO: implemente escutarAreaEventos().
+  - Adicione um listener de "click" no elemento #area-eventos
+  - O handler deve logar:
+      "tipo: " + event.type
+      "target (clicado): " + event.target.tagName
+      "currentTarget (dono do handler): " + event.currentTarget.id
+  - Clique na área, no botão filho e no span filho.
+  - Observe: event.target muda dependendo de ONDE você clicou.
+    event.currentTarget é sempre o mesmo (#area-eventos).</div>
+  <button onclick="escutarAreaEventos()">ativar listener</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>4. event.preventDefault() — cancelar comportamento padrão</h2>
+  <a href="https://javascript.info" id="link-teste" target="_blank" style="display:inline-block;margin:8px 0;">link para javascript.info (clique normal navega)</a>
+  <div class="task">Alguns elementos têm comportamento padrão: &lt;a&gt; navega, &lt;form&gt; envia, &lt;input type="checkbox"&gt; marca/desmarca.
+event.preventDefault() cancela esse comportamento.
+
+TODO: implemente interceptarLink().
+  - Adicione um listener de "click" no #link-teste
+  - Chame event.preventDefault() dentro do handler
+  - Logue: "link interceptado! href era: " + event.target.href
+  - Agora o clique NÃO deve navegar.
+
+DEPOIS: comente o preventDefault e veja a diferença.</div>
+  <button onclick="interceptarLink()">ativar interceptação do link</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>5. removeEventListener — remover um handler específico</h2>
+  <div class="caixa" id="caixa5">clique aqui</div>
+  <div class="task">Para remover um handler, você precisa passar a MESMA função que foi adicionada.
+Uma arrow function inline não pode ser removida — você não tem como referenciar ela depois.
+
+TODO: implemente configurarCaixa5().
+  - Declare uma função NOMEADA (não arrow inline) chamada handlerCaixa5
+    que loga "caixa5 clicada — vou ser removida depois!"
+  - Adicione ela com addEventListener no #caixa5
+
+TODO: implemente removerHandlerCaixa5().
+  - Chame removeEventListener com a MESMA função handlerCaixa5
+  - Depois de remover, cliques não devem mais logar nada.
+
+DICA: a função handlerCaixa5 precisa existir no escopo onde ambas as funções
+conseguem enxergá-la. Declare ela fora das duas, no escopo do script.</div>
+  <button onclick="configurarCaixa5()">adicionar handler</button>
+  <button onclick="removerHandlerCaixa5()">remover handler</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>6. Exercício javascript.info — Ocultar ao clicar</h2>
+  <div id="texto-ocultar" style="padding:12px;background:#ffeeba;border-radius:6px;margin:8px 0;font-size:14px;">
+    Este texto deve desaparecer quando você clicar no botão abaixo.
+  </div>
+  <button id="btn-ocultar">Ocultar texto</button>
+  <div class="task">Do enunciado original: "Adicione JavaScript ao button para que o elemento #texto-ocultar desapareça quando clicarmos nele."
+
+TODO: implemente configurarBtnOcultar().
+  - Adicione um listener de "click" no #btn-ocultar
+  - O handler deve ocultar o #texto-ocultar
+  - Use classList (como no dia 27!) em vez de style.display direto.</div>
+  <button onclick="configurarBtnOcultar()">ativar comportamento</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>7. Exercício javascript.info — Botão que some ao ser clicado</h2>
+  <div id="wrap-some" style="margin:8px 0;">
+    <button id="btn-some">Clique em mim e vou sumir</button>
+  </div>
+  <div class="task">Do enunciado original: "Crie um botão que se oculte ao ser clicado."
+
+TODO: implemente configurarBtnSome().
+  - Adicione um listener de "click" no #btn-some
+  - O handler deve fazer O PRÓPRIO BOTÃO sumir
+  - Dica: dentro do handler, como você referencia o elemento que foi clicado
+    sem usar querySelector? (lembra do event.target... ou do "this"?)</div>
+  <button onclick="configurarBtnSome()">ativar comportamento</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>8. Exercício javascript.info — Mover bola pelo campo</h2>
+  <div id="campo">
+    Clique para mover a bola
+    <div id="bola"></div>
+  </div>
+  <div class="task">Do enunciado original: "Mova a bola pelo campo até ouvir um clique.
+O centro da bola deve ficar exatamente sob o ponteiro ao clicar (se possível, sem ultrapassar a borda do campo)."
+
+TODO: implemente configurarCampo().
+  - Adicione um listener de "click" no #campo
+  - O handler deve:
+    1. Tornar a bola visível (display: block ou remover display:none)
+    2. Posicionar a bola no ponto clicado
+       Dica: use event.clientX e event.clientY para pegar as coordenadas do clique
+       Mas o campo tem posição relativa — você precisa descontar o offset do campo.
+       Veja: campo.getBoundingClientRect() retorna { left, top, width, height }
+    3. A bola já tem position: absolute e transform: translate(-50%,-50%) no CSS,
+       então basta definir bola.style.left e bola.style.top em pixels.
+
+DESAFIO extra: tente garantir que a bola não ultrapasse as bordas do campo.</div>
+  <button onclick="configurarCampo()">ativar campo</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>9. Exercício javascript.info — Menu deslizante</h2>
+  <div id="menu-wrap">
+    <div id="menu-titulo">▶ Menu (clique)</div>
+    <ul id="menu-lista">
+      <li>Perfil</li>
+      <li>Agenda</li>
+      <li>Sair</li>
+    </ul>
+  </div>
+  <div class="task">Do enunciado original: "Crie um menu que abra/feche ao clicar."
+
+TODO: implemente configurarMenu().
+  - Adicione um listener de "click" no #menu-titulo
+  - O handler deve alternar a visibilidade de #menu-lista (toggle com classList, ou style.display)
+  - Bônus: mude o texto do título de "▶ Menu" para "▼ Menu" quando aberto, e de volta quando fechado.</div>
+  <button onclick="configurarMenu()">ativar menu</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>10. Exercício javascript.info — Botão fechar em mensagens</h2>
+  <div id="mensagens">
+    <div class="msg">Reunião marcada para amanhã às 10h. <button class="msg-fechar">✕</button></div>
+    <div class="msg">Lembrete: buscar as crianças na escola. <button class="msg-fechar">✕</button></div>
+    <div class="msg">Consulta médica confirmada para sexta. <button class="msg-fechar">✕</button></div>
+  </div>
+  <div class="task">Do enunciado original: "Utilize JavaScript para adicionar um botão de fechar no canto superior direito de cada mensagem."
+(Aqui os botões já estão no HTML — sua tarefa é fazer eles funcionarem.)
+
+TODO: implemente configurarBotoesFechar().
+  - Pegue TODOS os elementos .msg-fechar com querySelectorAll
+  - Para cada um, adicione um listener de "click"
+  - O handler deve remover a mensagem inteira (o .msg pai do botão clicado)
+  - Dica: como você chega no .msg pai a partir do botão? (você já viu isso no dia 23!)</div>
+  <button onclick="configurarBotoesFechar()">ativar botões fechar</button>
+</section>
+
+<script>
+  // redireciona console.log pra aparecer também na div#log
+  const logDiv = document.getElementById('log');
+  const origLog = console.log;
+  console.log = function(...args) {
+    origLog(...args);
+    logDiv.textContent += args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '\n';
+    logDiv.scrollTop = logDiv.scrollHeight;
+  };
+
+  // ── 1. três formas + armadilha dos parênteses ────────────────────────
+ function atribuirHandler() {
+    caixa1.onclick = function() {
+      console.log('caixa1 clicada (via propriedade DOM)')
+    }
+  }
+  function removerHandler() {
+    caixa1.onclick = null
+  }
+
+  // ── 2. addEventListener — múltiplos handlers ──────────────────────────
+  function adicionarDoisHandlers() {
+    caixa2.addEventListener('click', () => {
+      console.log('handler 1 — borda laranja!')
+      caixa2.classList.add('destaque')
+
+    })
+
+    caixa2.addEventListener('click', () => {
+      console.log('handler 2 — texto!')
+      caixa2.textContent = 'oi!'
+    })
+    }
+  function testeOnclickSobrescreve() {
+    caixa2.onclick = function(){
+      console.log('caixa2 clicada (via propriedade DOM)')
+    }
+    caixa2.onclick = function(){
+      console.log('caixa2')
+      caixa2.classList.add('destaque')
+    }
+
+  }
+
+  // ── 3. objeto event ───────────────────────────────────────────────────
+  function escutarAreaEventos() {
+    let areaEventos = document.querySelector("#area-eventos")
+    areaEventos.onclick = function(event) {
+      console.log("tipo: " + event.type + "target(clicado): " + event.target.tagName + " currentTarget(dono do handler): " + event.currentTarget.id)
+    }
+  }
+
+  // ── 4. preventDefault ─────────────────────────────────────────────────
+  function interceptarLink() {
+    let linkTeste = document.querySelector('#link-teste')
+    linkTeste.addEventListener("click", function(event) {
+      event.preventDefault()
+      console.log(`link interceptado! href era:  ${event.target.href}`)
+    })
+  }
+
+  // ── 5. removeEventListener ────────────────────────────────────────────
+  // DICA: declare handlerCaixa5 aqui (fora das funções de baixo)
+  // para que ambas consigam enxergá-la.
+
+  let caixa5 = document.querySelector('#caixa5')
+
+  let handlerCaixa5 = function(){
+    console.log("caixa5 clicada — vou ser removida depois!")
+  }
+
+  function configurarCaixa5() {
+    caixa5.addEventListener("click", handlerCaixa5)
+  }
+
+  function removerHandlerCaixa5() {
+    caixa5.removeEventListener("click", handlerCaixa5)
+  }
+
+  // ── 6. ocultar ao clicar ──────────────────────────────────────────────
+  let textoOcultar = document.querySelector('#texto-ocultar')
+    
+  let handlerRemover = function(){
+    textoOcultar.classList.add('hide')
+  }
+  function configurarBtnOcultar() {
+   let button = document.querySelector("#btn-ocultar")
+   button.addEventListener("click", handlerRemover )
+  }
+
+  // ── 7. botão que some ────────────────────────────────────────────────
+  
+  // function configurarBtnSome() {
+  // let handler = function(e){
+  //   e.target.classList.add('hide')
+  // }
+  //   document.querySelector('#btn-some').addEventListener("click", handler)
+  // }
+
+ function configurarBtnSome() {
+  let handler = function(e){
+    this.classList.add('hide')
+  }
+    document.querySelector('#btn-some').addEventListener("click", handler)
+  }
+
+
+
+  // ── 8. bola no campo ─────────────────────────────────────────────────
+  
+  function configurarCampo() {
+     
+  }
+
+  // ── 9. menu deslizante ───────────────────────────────────────────────
+  
+  function configurarMenu() {
+    let lista = document.querySelector('#menu-lista')
+    let handler = function(){
+
+      let visible = getComputedStyle(lista).display
+      if (visible == 'none'){
+        lista.style.display = 'block'
+        document.querySelector('#menu-titulo').textContent = "▼ Menu"
+      } else {
+        lista.style.display = 'none'
+        document.querySelector('#menu-titulo').textContent = "▶ Menu"
+      }
+    }
+    document.querySelector('#menu-titulo').addEventListener("click", handler)
+  }
+
+  // ── 10. botões fechar ────────────────────────────────────────────────
+  function configurarBotoesFechar() {
+    let allMsg = document.querySelectorAll('.msg-fechar')
+
+    //separar
+    for( let msg of allMsg) {
+      msg.addEventListener('click', function() {
+        msg.parentElement.remove()
+      } )
+    }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dia 31 — Formulários</title>
+  <style>
+    body { background: #0e0e0f; color: #f0ede8; font-family: sans-serif; padding: 24px; }
+    h1 { color: #f5c842; font-size: 20px; margin-bottom: 4px; }
+    .subtitle { color: #888; font-size: 13px; margin-bottom: 32px; }
+    section { background: #161618; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    h2 { color: #f5c842; font-size: 15px; margin: 0 0 12px; }
+    .task { background: #1e1e21; border-left: 3px solid #a78bfa; padding: 10px 14px; border-radius: 6px; font-size: 13px; color: #ccc; margin-bottom: 16px; line-height: 1.6; }
+    .task code { background: rgba(245,200,66,.1); color: #f5c842; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    button { background: #1e1e21; border: 1px solid rgba(255,255,255,0.13); color: #f0ede8; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 8px; margin-top: 8px; }
+    button:hover { border-color: #f5c842; color: #f5c842; }
+    #log { margin-top: 16px; background: #0e0e0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 10px 14px; font-family: monospace; font-size: 12px; color: #4ade80; min-height: 40px; white-space: pre-wrap; }
+    label { font-size: 13px; color: #ccc; display: block; margin-bottom: 6px; }
+    input[type="text"], input[type="date"], textarea, select {
+      background: #0e0e0f; border: 1px solid rgba(255,255,255,0.13); color: #f0ede8;
+      padding: 6px 10px; border-radius: 6px; font-size: 13px; width: 100%; max-width: 320px;
+      margin-bottom: 10px; box-sizing: border-box;
+    }
+    input[type="radio"], input[type="checkbox"] { margin-right: 6px; }
+    fieldset { border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+    legend { color: #a78bfa; font-size: 13px; padding: 0 6px; }
+  </style>
+</head>
+<body>
+
+<h1>Dia 31 — Formulários e controles</h1>
+<p class="subtitle">Fonte: javascript.info/form-elements</p>
+
+<!-- LOG GLOBAL -->
+<div id="log">// logs vão aparecer aqui</div>
+
+<!-- ───── SEÇÃO 1 ───── -->
+<section>
+  <h2>Exercício 1 — Acessar valor de input</h2>
+  <div class="task">
+    <strong>O que fazer:</strong> Implemente <code>lerInput()</code>.<br>
+    Leia o valor do campo <code>#titulo-evento</code> e logue:<br>
+    <code>Título digitado: [valor]</code><br><br>
+    Depois implemente <code>limparInput()</code> que apaga o que foi digitado.<br><br>
+    💡 Dica: o valor de um input está em <code>input.value</code>.
+  </div>
+  <label>Título do evento:</label>
+  <input type="text" id="titulo-evento" placeholder="Ex: Reunião com escola">
+  <br>
+  <button onclick="lerInput()">Ler valor</button>
+  <button onclick="limparInput()">Limpar</button>
+</section>
+
+<!-- ───── SEÇÃO 2 ───── -->
+<section>
+  <h2>Exercício 2 — Navegar no formulário com form.elements</h2>
+  <div class="task">
+    <strong>O que fazer:</strong> Implemente <code>lerFormulario()</code>.<br>
+    Use <code>document.forms['form-evento']</code> para pegar o formulário.<br>
+    Depois use <code>form.elements</code> para acessar os campos pelo <code>name</code>.<br>
+    Logue o título e a data separadamente:<br>
+    <code>Título: [valor]</code><br>
+    <code>Data: [valor]</code><br><br>
+    💡 Compare com <code>querySelector</code> — qual parece mais direto aqui?
+  </div>
+  <form name="form-evento" id="form-evento">
+    <label>Título:</label>
+    <input type="text" name="titulo" placeholder="Título do evento">
+    <label>Data:</label>
+    <input type="date" name="data">
+  </form>
+  <button onclick="lerFormulario()">Ler formulário</button>
+</section>
+
+<!-- ───── SEÇÃO 3 ───── -->
+<section>
+  <h2>Exercício 3 — Checkbox e radio</h2>
+  <div class="task">
+    <strong>O que fazer:</strong> Implemente <code>lerOpcoes()</code>.<br>
+    Leia se o checkbox <code>#confirmado</code> está marcado e qual radio <code>name="prioridade"</code> está selecionado.<br>
+    Logue:<br>
+    <code>Confirmado: true/false</code><br>
+    <code>Prioridade: [valor selecionado ou "nenhuma"]</code><br><br>
+    💡 Checkbox usa <code>.checked</code> (boolean). Radio também — mas são vários, então você precisa percorrer a coleção e achar o que tem <code>.checked === true</code>.
+  </div>
+  <fieldset>
+    <legend>Status</legend>
+    <label><input type="checkbox" id="confirmado"> Evento confirmado</label>
+  </fieldset>
+  <fieldset>
+    <legend>Prioridade</legend>
+    <label><input type="radio" name="prioridade" value="baixa"> Baixa</label>
+    <label><input type="radio" name="prioridade" value="media"> Média</label>
+    <label><input type="radio" name="prioridade" value="alta"> Alta</label>
+  </fieldset>
+  <button onclick="lerOpcoes()">Ler opções</button>
+</section>
+
+<!-- ───── SEÇÃO 4 ───── -->
+<section>
+  <h2>Exercício 4 — Select</h2>
+  <div class="task">
+    <strong>O que fazer:</strong> Implemente <code>lerSelect()</code> e <code>selecionarUltimo()</code>.<br><br>
+    Em <code>lerSelect()</code>: logue o valor e o texto da opção selecionada em <code>#tipo-evento</code>.<br>
+    Tente as três formas: <code>select.value</code>, <code>select.selectedIndex</code> e <code>select.options[index]</code>.<br><br>
+    Em <code>selecionarUltimo()</code>: selecione a última opção do select programaticamente.<br><br>
+    💡 <code>select.options</code> é uma coleção — quantas opções tem? O índice começa em 0.
+  </div>
+  <label>Tipo de evento:</label>
+  <select id="tipo-evento">
+    <option value="consulta">Consulta médica</option>
+    <option value="reuniao">Reunião escolar</option>
+    <option value="aniversario">Aniversário</option>
+    <option value="outro">Outro</option>
+  </select>
+  <br>
+  <button onclick="lerSelect()">Ler selecionado</button>
+  <button onclick="selecionarUltimo()">Selecionar último</button>
+</section>
+
+<!-- ───── SEÇÃO 5 — Exercício do javascript.info ───── -->
+<section>
+  <h2>Exercício 5 — Adicionar opção ao select (javascript.info)</h2>
+  <div class="task">
+    <strong>O que fazer:</strong> Implemente <code>exercicioSelect()</code>.<br><br>
+    Com o select <code>#genres</code> abaixo:<br>
+    1. Logue o valor e o texto da opção atualmente selecionada.<br>
+    2. Adicione uma nova opção: valor <code>"classic"</code>, texto <code>"Classic"</code>.<br>
+    3. Selecione essa nova opção.<br><br>
+    💡 Para criar uma nova opção você pode usar <code>new Option(texto, valor)</code> ou <code>document.createElement('option')</code>.<br>
+    Para inserir no select: <code>select.append(novaOpcao)</code>.<br>
+    Para selecionar: <code>opcao.selected = true</code>.
+  </div>
+  <select id="genres">
+    <option value="rock">Rock</option>
+    <option value="blues" selected>Blues</option>
+  </select>
+  <br>
+  <button onclick="exercicioSelect()">Executar exercício</button>
+</section>
+
+<script>
+  // Redireciona console.log para o #log também
+  const logEl = document.getElementById('log');
+  const _log = console.log.bind(console);
+  console.log = function(...args) {
+    _log(...args);
+    logEl.textContent += args.join(' ') + '\n';
+  };
+
+  // ── Exercício 1 ──────────────────────────────────────────
+  function lerInput() {
+    //pegar input
+    let elem = document.querySelector('#titulo-evento')
+    console.log(`Título digitado ${elem.value}`)
+  }
+
+  function limparInput() {
+    let elem = document.querySelector('#titulo-evento')
+    elem.value = ""
+  }
+
+  // ── Exercício 2 ──────────────────────────────────────────
+  function lerFormulario() {
+    // TODO
+    // dica: document.forms['form-evento'] ou document.forms.form-evento não funciona por causa do hífen
+    // use document.forms['form-evento']
+    //pegar o formulário
+    let form = document.forms['form-evento']
+    let title = form.elements.titulo
+    //let title = form.titulo
+    let date = form.data
+    console.log(`Título: ${title.value}`)
+    console.log(`Data: ${date.value} `)
+  }
+
+  // ── Exercício 3 ──────────────────────────────────────────
+  function lerOpcoes() {
+    //pega checkbox
+    if(confirmado.checked === true) {
+      console.log(`Evento confirmadoe`)
+    } else {
+      console.log(`Evento não confirmado`)
+    }
+    //todos inputs prioridades
+    let inputPrioridade =  document.querySelectorAll('[name="prioridade"]')
+    let encontrou = false
+    for(item of inputPrioridade) {
+      if(item.checked === true) {
+        encontrou = true
+        console.log(`Prioridade: ${item.value}`)
+        } 
+      }
+      if (!encontrou) {
+        console.log(`Nenhuma alternativa de prioridade foi marcada`)
+      }
+    }
+  
+
+  // ── Exercício 4 ──────────────────────────────────────────
+  function lerSelect() {
+    
+  
+    // pego o select o que for selecionado
+    let select = document.querySelector('#tipo-evento')
+      //valor selecionado
+        console.log(`Valor: ${select.value} e o texto: ${select.options[select.selectedIndex].text}`)
+    }
+
+  
+
+  function selecionarUltimo() {
+    let select = document.querySelector('#tipo-evento')
+    let ultimo = select.options[select.options.length -1]
+    //seleciona o último item
+    ultimo.selected = true
+    console.log(`Valor: ${ultimo.text}`)
+  }
+
+  // ── Exercício 5 ──────────────────────────────────────────
+  function exercicioSelect() {
+    let genres = document.querySelector('#genres')
+    console.log(`Valor: ${genres.value} e o texto: ${genres.options[genres.selectedIndex].text}`)
+
+    option = new Option("Classic", "classic", true, true)
+    //let option = document.createElement('option')
+    //option.value= "classic"
+    //option.text = "Classic"
+    //option.selected = true
+
+    genres.append(option)
+
+  }
+</script>
+
+</body>
+</html>

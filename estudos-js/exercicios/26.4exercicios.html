@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+        <script>
+
+        //crio ul
+        let ul = document.createElement('ul')
+
+        //num loop, perguntar, criar <li>, inserir na <ul>, até prompt retornar null
+        let resposta = prompt('Digite algo ou cancele para parar:')
+
+        while (resposta !== null){
+            //crio li
+            let li = document.createElement('li')
+            //atribuo a resposta do usuário nele
+            li.append(document.createTextNode(resposta))
+
+            ul.append(li)
+
+            resposta = prompt('Digite outra resposta ou cancele para parar')
+
+        }
+
+        document.body.append(ul)
+
+        //mostrar tudo o que está na ul e printar na tela
+
+        </script>
+    </body>
+</html>
+
+

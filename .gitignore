@@ -1,0 +1,34 @@
+# Estado local do oh-my-claudecode (sessões, HUD, replays de agente)
+.omc/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+*.swp
+*.swo
+*~
+.idea/
+# .vscode/ NÃO é ignorado de propósito: settings.json desliga autocomplete
+# e Copilot, o que faz parte da metodologia de estudo (digitar sem sugestão).
+.vscode/*
+!.vscode/settings.json
+
+# Logs e temporários
+*.log
+npm-debug.log*
+.tmp/
+tmp/
+
+# Dependências e build (ainda não usados — entram nas Etapas 5+)
+node_modules/
+dist/
+build/
+.cache/
+
+# Variáveis de ambiente (Etapa 5+: chaves de API, login)
+.env
+.env.*
+!.env.example

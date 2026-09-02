@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano JS — do zero ao fluente</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --bg2: #161618;
+  --bg3: #1e1e21;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #f0ede8;
+  --muted: #888580;
+  --accent: #f5c842;
+  --accent2: #e8a020;
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.08);
+  --green-border: rgba(74,222,128,0.25);
+  --orange: #fb923c;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --red: #f87171;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6}
+body{min-height:100vh;padding:0 0 80px}
+
+/* LAYOUT */
+.app{max-width:900px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:28px 0 0;border-bottom:1px solid var(--border);padding-bottom:20px;gap:16px;flex-wrap:wrap}
+.logo{font-family:'Fraunces',serif;font-size:22px;font-weight:300;letter-spacing:-0.5px;color:var(--text)}
+.logo span{color:var(--accent);font-style:italic}
+.save-status{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);min-width:80px;text-align:right}
+
+/* HERO STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:6px}
+.stat-val{font-size:28px;font-weight:500;color:var(--text);font-family:'Fraunces',serif;font-weight:300;line-height:1}
+.stat-val.accent{color:var(--accent)}
+.stat-val.green{color:var(--green)}
+
+/* PROGRESS BAR */
+.progress-wrap{margin-bottom:28px}
+.progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace}
+.progress-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--orange));border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* PHASE TABS */
+.phases{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.phase-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--border2);font-size:13px;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif}
+.phase-btn:hover{border-color:rgba(255,255,255,0.25);color:var(--text)}
+.phase-btn.active{background:var(--accent);color:#0e0e0f;border-color:var(--accent);font-weight:500}
+
+/* PHASE HEADER */
+.phase-header{margin-bottom:24px;padding:20px 22px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);border-left:3px solid var(--accent)}
+.phase-title{font-family:'Fraunces',serif;font-size:19px;font-weight:300;margin-bottom:4px}
+.phase-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* WEEK */
+.week{margin-bottom:32px}
+.week-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.week-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.week-label{font-size:14px;font-weight:500;color:var(--text)}
+.week-progress{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto}
+
+/* DAY CARDS */
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.day{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
+.day:hover{border-color:var(--border2)}
+.day.done{background:var(--green-bg);border-color:var(--green-border)}
+.day.current{border-color:var(--accent);box-shadow:0 0 0 1px rgba(245,200,66,.15)}
+.day-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.day-num .check{color:var(--green);font-size:12px}
+.day-num .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.day-date{color:var(--muted);opacity:.7;margin-left:auto;font-size:10px}
+.day-topic{font-size:12px;color:var(--text);line-height:1.4;margin-bottom:10px}
+.day.done .day-topic{color:rgba(74,222,128,.8)}
+.day-links{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.day-link{font-size:10px;color:var(--blue);text-decoration:none;padding:2px 7px;background:rgba(96,165,250,.08);border-radius:4px;border:1px solid rgba(96,165,250,.15);white-space:nowrap;transition:background .1s}
+.day-link:hover{background:rgba(96,165,250,.16)}
+.day-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;margin-bottom:8px;font-family:'DM Mono',monospace}
+.tag-project{background:rgba(168,139,250,.12);color:var(--purple);border:1px solid rgba(168,139,250,.2)}
+.tag-review{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2)}
+.mark-btn{width:100%;padding:5px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.mark-btn:hover{border-color:var(--green-border);color:var(--green)}
+.day.done .mark-btn{border-color:var(--green-border);color:var(--green);background:var(--green-bg)}
+
+/* EXTERNAL RESOURCES */
+.ext-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;margin-top:8px}
+.ext-box h3{font-size:15px;font-weight:500;margin-bottom:4px}
+.ext-box p{font-size:13px;color:var(--muted);margin-bottom:14px}
+.ext-links{display:flex;gap:10px;flex-wrap:wrap}
+.ext-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--accent);text-decoration:none;padding:7px 14px;background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);border-radius:8px;transition:background .15s}
+.ext-link:hover{background:rgba(245,200,66,.12)}
+.ext-link svg{width:13px;height:13px;opacity:.7}
+
+/* EXPAND PANEL */
+.day-expand-panel{display:none;margin-top:6px;padding:14px 16px;background:var(--bg2);border:1px solid var(--blue);border-radius:var(--radius);border-left:3px solid var(--blue)}
+.day-expand-panel.open{display:block}
+.expand-btn{width:100%;padding:5px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--blue);font-size:11px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;margin-bottom:6px}
+.expand-btn:hover{border-color:var(--blue);background:rgba(96,165,250,.06)}
+.day.expanded .expand-btn{border-color:var(--blue);background:rgba(96,165,250,.06)}
+.ex-concept{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;padding:10px 12px;background:var(--bg3);border-radius:8px;border-left:2px solid var(--purple)}
+.ex-concept strong{color:var(--text);display:block;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-family:'DM Mono',monospace}
+.ex-block{margin-bottom:10px}
+.ex-label{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.ex-label.easy{color:var(--green)}
+.ex-label.hard{color:var(--orange)}
+.ex-text{font-size:12px;color:var(--text);line-height:1.5;padding:8px 10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
+.ex-code{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:rgba(245,200,66,.05);border:1px solid rgba(245,200,66,.12);border-radius:5px;padding:6px 8px;margin-top:5px;white-space:pre-wrap;line-height:1.5}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:8px 20px;font-size:13px;color:var(--text);opacity:0;transition:all .25s;pointer-events:none;z-index:100;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .days{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top-bar">
+    <div class="logo">JS <span>fluente</span> → freelance</div>
+    <div class="save-status" id="save-status"></div>
+  </div>
+
+  <div class="ext-box" style="margin-top:20px;border-left:3px solid var(--purple)">
+    <h3>🛠 Projeto único: Agenda Compartilhada</h3>
+    <p>Em vez de projetos isolados, todos os marcos práticos do plano constroem incrementalmente o <strong>mesmo app</strong>: uma agenda de eventos compartilhável entre pessoas (ex: pais separados acompanhando a rotina dos filhos).
+    Etapa 1 (CRUD em JS puro) → Etapa 2 (interface com DOM/calendário) → Etapa 3 (API de feriados) → Etapa 4 (refatoração com classes) → Etapa 5 (módulos + perfis) → Etapa 6 (TypeScript) → Etapa Final (React + TS + deploy).
+    O resultado final vai pro GitHub com histórico de evolução — ótimo para mostrar em entrevistas.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Concluídos</div>
+      <div class="stat-val accent" id="s-done">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total dias</div>
+      <div class="stat-val" id="s-total">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Progresso</div>
+      <div class="stat-val green" id="s-pct">0%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Próximo dia</div>
+      <div class="stat-val" id="s-next" style="font-size:18px;padding-top:4px">—</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span>início</span>
+      <span id="prog-label">0 / 0 dias</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="phases" id="phases"></div>
+  <div id="content"></div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'jsplan-v3-done';
+
+const phases = [
+  {
+    id: 'all', label: 'Todos',
+  },
+  {
+    id: 'base', label: '🟡 Base sólida',
+    title: 'Fase 1 — Base sólida em JS',
+    desc: 'Fundamentos com profundidade real. Cada dia tem prática. Você já completou a semana 1 e objetos — vamos continuar daqui.',
+  },
+  {
+    id: 'dom', label: '🟠 DOM & Async',
+    title: 'Fase 2 — DOM, eventos e async',
+    desc: 'Aqui você começa a fazer coisas que aparecem no browser. Mini projetos reais em cada semana.',
+  },
+  {
+    id: 'fluent', label: '🔵 Fluência JS',
+    title: 'Fase 3 — Fluência em JS',
+    desc: 'Closures, protótipos, módulos, performance. Você vai entender JS de verdade, não só usar.',
+  },
+  {
+    id: 'ts_react', label: '🟢 TS & React',
+    title: 'Fase 4 — TypeScript & React',
+    desc: 'Com o JS sólido, TypeScript e React vão fazer muito mais sentido. Foco em projetos para portfólio.',
+  },
+];
+
+const plan = [
+  // ── FASE 1: BASE SÓLIDA ──────────────────────────────────────────────
+  { phase:'base', week:1, wlabel:'Semana 1 — Fundamentos (já feitos)', days:[
+    { d:1, topic:'Introdução ao JS + Hello World + Variáveis', done_default:true,
+      links:[['Intro','https://javascript.info/intro'],['Hello World','https://javascript.info/hello-world'],['Variáveis','https://javascript.info/variables']]},
+    { d:2, topic:'Tipos de dados + Conversões + Operadores', done_default:true,
+      links:[['Tipos','https://javascript.info/types'],['Conversões','https://javascript.info/type-conversions'],['Operadores','https://javascript.info/operators']]},
+    { d:3, topic:'Comparações + If/else + Operadores lógicos', done_default:true,
+      links:[['Comparações','https://javascript.info/comparison'],['If/else','https://javascript.info/ifelse'],['Lógicos','https://javascript.info/logical-operators']]},
+    { d:4, topic:'Loops while/for + Switch', done_default:true,
+      links:[['Loops','https://javascript.info/while-for'],['Switch','https://javascript.info/switch']]},
+    { d:5, topic:'Funções + Expressões de função + Arrow functions', done_default:true,
+      links:[['Funções','https://javascript.info/function-basics'],['Expressões','https://javascript.info/function-expressions'],['Arrow','https://javascript.info/arrow-functions-basics']]},
+  ]},
+  { phase:'base', week:2, wlabel:'Semana 2 — Objetos e Arrays', days:[
+    { d:6, topic:'Objetos: criação, acesso, delete', done_default:true,
+      links:[['Objetos','https://javascript.info/object']]},
+    { d:7, topic:'Cópia de objetos + referência vs valor',
+      links:[['Cópia','https://javascript.info/object-copy']]},
+    { d:8, topic:'Métodos de objeto + this',
+      links:[['Métodos','https://javascript.info/object-methods']]},
+    { d:9, topic:'Constructor/new + Optional chaining',
+      links:[['Constructor','https://javascript.info/constructor-new'],['Chaining','https://javascript.info/optional-chaining']]},
+    { d:10, topic:'Arrays — criação, acesso, push/pop/shift',
+      links:[['Arrays','https://javascript.info/array']]},
+  ]},
+  { phase:'base', week:3, wlabel:'Semana 3 — Arrays avançado + Strings', days:[
+    { d:11, topic:'Métodos de array: map, filter, reduce',
+      links:[['Métodos','https://javascript.info/array-methods']]},
+    { d:12, topic:'Strings em profundidade',
+      links:[['Strings','https://javascript.info/string']]},
+    { d:13, topic:'Números + Math + Date básico',
+      links:[['Números','https://javascript.info/number']]},
+    { d:14, topic:'Destructuring de objetos e arrays',
+      links:[['Destructuring','https://javascript.info/destructuring-assignment']]},
+    { d:15, topic:'Map, Set + JSON', tag:'review',
+      links:[['Map/Set','https://javascript.info/map-set'],['JSON','https://javascript.info/json']]},
+  ]},
+  { phase:'base', week:4, wlabel:'Semana 4 — Projeto 1', days:[
+    { d:16, topic:'Revisão: objetos, arrays, métodos', tag:'review',
+      links:[]},
+    { d:17, topic:'🛠 Agenda Compartilhada — Etapa 1: CRUD de eventos (criar, listar, editar, excluir) em JS puro', tag:'project',
+      links:[]},
+    { d:18, topic:'🛠 Agenda — Etapa 1: salvar eventos no localStorage + busca por título/data', tag:'project',
+      links:[]},
+    { d:19, topic:'🛠 Agenda — Etapa 1: exportar/importar agenda como JSON', tag:'project',
+      links:[]},
+    { d:20, topic:'Revisão geral + anotações do que travou', tag:'review',
+      links:[]},
+  ]},
+
+  // ── FASE 2: DOM & ASYNC ──────────────────────────────────────────────
+  { phase:'dom', week:5, wlabel:'Semana 5 — DOM', days:[
+    { d:21, topic:'Ambiente do browser: window, document, BOM vs DOM',
+      links:[['Browser','https://javascript.info/browser-environment']]},
+    { d:22, topic:'DOM tree: nós, elementos, texto e como o browser monta a árvore',
+      links:[['DOM','https://javascript.info/dom-nodes']]},
+    { d:23, topic:'Navegação no DOM: parentElement, children, firstElementChild, nextElementSibling',
+      links:[['Navegação','https://javascript.info/dom-navigation']]},
+    { d:24, topic:'querySelector + querySelectorAll',
+      links:[['querySelector','https://javascript.info/searching-elements-dom']]},
+    { d:25, topic:'Atributos, propriedades, dataset',
+      links:[['Atributos','https://javascript.info/dom-attributes-and-properties']]},
+  ]},
+  { phase:'dom', week:6, wlabel:'Semana 6 — DOM na prática + Eventos', days:[
+    { d:26, topic:'Modificar o documento: criar, inserir, remover elementos',
+      links:[['Modificar','https://javascript.info/modifying-document']]},
+    { d:27, topic:'Estilos e classes via JS: style vs classList',
+      links:[['Estilos','https://javascript.info/styles-and-classes']]},
+    { d:28, topic:'Introdução a eventos + addEventListener',
+      links:[['Eventos','https://javascript.info/introduction-browser-events']]},
+    { d:29, topic:'Bubbling, capturing, stopPropagation',
+      links:[['Bubbling','https://javascript.info/bubbling-and-capturing']]},
+    { d:30, topic:'Event delegation',
+      links:[['Delegation','https://javascript.info/event-delegation']]},
+  ]},
+  { phase:'dom', week:7, wlabel:'Semana 7 — Formulários + Projeto DOM', days:[
+    { d:31, topic:'Formulários + validação básica',
+      links:[['Formulários','https://javascript.info/form-elements']]},
+    { d:32, topic:'🛠 Agenda — Etapa 2: interface com DOM — calendário visual, clicar no dia para ver/adicionar eventos', tag:'project',
+      links:[]},
+    { d:33, topic:'Callbacks — o que são e por que existem',
+      links:[['Callbacks','https://javascript.info/callbacks']]},
+    { d:34, topic:'Promises — criação, then, catch',
+      links:[['Promises','https://javascript.info/promise-basics']]},
+    { d:35, topic:'Encadeamento de promises',
+      links:[['Encadeamento','https://javascript.info/promise-chaining']]},
+  ]},
+  { phase:'dom', week:8, wlabel:'Semana 8 — Async + Projeto 2', days:[
+    { d:36, topic:'Tratamento de erros em promises',
+      links:[['Erros','https://javascript.info/promise-error-handling']]},
+    { d:37, topic:'Async/await — sintaxe e padrões',
+      links:[['Async/await','https://javascript.info/async-await']]},
+    { d:38, topic:'Fetch API — buscar dados de uma API real',
+      links:[['Fetch','https://javascript.info/fetch']]},
+    { d:39, topic:'LocalStorage — salvar dados no browser',
+      links:[['LocalStorage','https://javascript.info/localstorage']]},
+    { d:40, topic:'🛠 Agenda — Etapa 3: integrar API de feriados nacionais (BrasilAPI) no calendário', tag:'project',
+      links:[]},
+  ]},
+  { phase:'dom', week:9, wlabel:'Semana 9 — Projeto 2 (continuação)', days:[
+    { d:41, topic:'🛠 Agenda — Etapa 3: salvar feriados em cache no localStorage', tag:'project',
+      links:[]},
+    { d:42, topic:'🛠 Agenda — Etapa 3: loading state + tratamento de erro na busca de feriados', tag:'project',
+      links:[]},
+    { d:43, topic:'Revisão do bloco DOM & Async', tag:'review',
+      links:[]},
+  ]},
+
+  // ── FASE 3: FLUÊNCIA JS ──────────────────────────────────────────────
+  { phase:'fluent', week:10, wlabel:'Semana 9 — Funções avançadas', days:[
+    { d:44, topic:'Escopo, hoisting e closure',
+      links:[['Closure','https://javascript.info/closure']]},
+    { d:45, topic:'Objeto função + higher-order functions',
+      links:[['Obj função','https://javascript.info/function-object']]},
+    { d:46, topic:'call, apply, bind',
+      links:[['Decorators','https://javascript.info/call-apply-decorators'],['bind','https://javascript.info/bind']]},
+    { d:47, topic:'Rest/spread + argumentos variádicos',
+      links:[['Rest/spread','https://javascript.info/rest-parameters-spread']]},
+    { d:48, topic:'Recursão + currying',
+      links:[['Recursão','https://javascript.info/recursion'],['Currying','https://javascript.info/currying-partials']]},
+  ]},
+  { phase:'fluent', week:11, wlabel:'Semana 10 — OOP & Protótipos', days:[
+    { d:49, topic:'Herança prototípica — como JS funciona por baixo',
+      links:[['Herança','https://javascript.info/prototype-inheritance']]},
+    { d:50, topic:'Classes: sintaxe, herança, super',
+      links:[['Classes','https://javascript.info/class'],['Herança classes','https://javascript.info/class-inheritance']]},
+    { d:51, topic:'Static + private/protected',
+      links:[['Static','https://javascript.info/static-properties-methods'],['Private','https://javascript.info/private-protected-properties-methods']]},
+    { d:52, topic:'instanceof + mixins',
+      links:[['instanceof','https://javascript.info/instanceof'],['Mixins','https://javascript.info/mixins']]},
+    { d:53, topic:'🛠 Agenda — Etapa 4: refatorar com classes (Evento, Agenda, Pessoa)', tag:'project',
+      links:[]},
+  ]},
+  { phase:'fluent', week:12, wlabel:'Semana 11 — Módulos & Async avançado', days:[
+    { d:54, topic:'Módulos ES6 — import/export/dynamic',
+      links:[['Módulos','https://javascript.info/modules-intro'],['Export','https://javascript.info/import-export'],['Dynamic','https://javascript.info/modules-dynamic-imports']]},
+    { d:55, topic:'Event loop em profundidade',
+      links:[['Event loop','https://javascript.info/event-loop']]},
+    { d:56, topic:'Promise API: all, race, allSettled, any',
+      links:[['Promise API','https://javascript.info/promise-api']]},
+    { d:57, topic:'try/catch + erros customizados',
+      links:[['try/catch','https://javascript.info/try-catch'],['Custom errors','https://javascript.info/custom-errors']]},
+    { d:58, topic:'Fetch avançado + CORS + FormData',
+      links:[['Fetch API','https://javascript.info/fetch-api'],['CORS','https://javascript.info/fetch-crossorigin'],['FormData','https://javascript.info/formdata']]},
+  ]},
+  { phase:'fluent', week:13, wlabel:'Semana 12 — Projeto 3 + Consolidação', days:[
+    { d:59, topic:'Property descriptors + getters/setters',
+      links:[['Descriptors','https://javascript.info/property-descriptors'],['Getters','https://javascript.info/property-accessors']]},
+    { d:60, topic:'🛠 Agenda — Etapa 5: separar em módulos ES6 (Agenda, Evento, Pessoa, storage)', tag:'project',
+      links:[]},
+    { d:61, topic:'🛠 Agenda — Etapa 5: sistema de perfis (múltiplas pessoas compartilhando a agenda) + login fake (JWT básico)', tag:'project',
+      links:[]},
+    { d:62, topic:'Revisão geral de JS — o que você sabe agora', tag:'review',
+      links:[]},
+    { d:63, topic:'Preparação para TypeScript: o que vai mudar', tag:'review',
+      links:[['Migrate to TS','https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html']]},
+  ]},
+
+  // ── FASE 4: TS & REACT ──────────────────────────────────────────────
+  { phase:'ts_react', week:14, wlabel:'Semana 13 — TypeScript', days:[
+    { d:64, topic:'Tipos básicos, inferência, any vs unknown',
+      links:[['TS Handbook','https://www.typescriptlang.org/docs/handbook/2/basic-types.html']]},
+    { d:65, topic:'Interfaces vs Types + generics básico',
+      links:[['Interfaces','https://www.typescriptlang.org/docs/handbook/2/objects.html']]},
+    { d:66, topic:'Funções tipadas + arrays tipados',
+      links:[['Funções TS','https://www.typescriptlang.org/docs/handbook/2/functions.html']]},
+    { d:67, topic:'Classes em TS + modificadores de acesso',
+      links:[['Classes TS','https://www.typescriptlang.org/docs/handbook/2/classes.html']]},
+    { d:68, topic:'Union types + narrowing + type guards',
+      links:[['Narrowing','https://www.typescriptlang.org/docs/handbook/2/narrowing.html']]},
+  ]},
+  { phase:'ts_react', week:15, wlabel:'Semana 14 — TypeScript avançado', days:[
+    { d:69, topic:'Generics em profundidade',
+      links:[['Generics','https://www.typescriptlang.org/docs/handbook/2/generics.html']]},
+    { d:70, topic:'Utility types: Partial, Required, Pick, Omit',
+      links:[['Utility','https://www.typescriptlang.org/docs/handbook/utility-types.html']]},
+    { d:71, topic:'Módulos em TS + tsconfig essencial',
+      links:[['Módulos TS','https://www.typescriptlang.org/docs/handbook/modules.html']]},
+    { d:72, topic:'🛠 Agenda — Etapa 6: migrar para TypeScript (tipar Evento, Pessoa, Agenda)', tag:'project',
+      links:[]},
+    { d:73, topic:'Revisão TS + dúvidas frequentes', tag:'review',
+      links:[]},
+  ]},
+  { phase:'ts_react', week:16, wlabel:'Semana 15 — React fundamentos', days:[
+    { d:74, topic:'O que é React + JSX + componentes',
+      links:[['React inicio','https://react.dev/learn']]},
+    { d:75, topic:'Props + renderização condicional',
+      links:[['Props','https://react.dev/learn/passing-props-to-a-component']]},
+    { d:76, topic:'useState — estado e re-render',
+      links:[['useState','https://react.dev/reference/react/useState']]},
+    { d:77, topic:'useEffect — side effects e cleanup',
+      links:[['useEffect','https://react.dev/reference/react/useEffect']]},
+    { d:78, topic:'Listas + keys + eventos no React',
+      links:[['Listas','https://react.dev/learn/rendering-lists']]},
+  ]},
+  { phase:'ts_react', week:17, wlabel:'Semana 16 — React na prática', days:[
+    { d:79, topic:'Formulários controlados + validação',
+      links:[['Forms','https://react.dev/learn/sharing-state-between-components']]},
+    { d:80, topic:'Context API — estado global simples',
+      links:[['Context','https://react.dev/reference/react/createContext']]},
+    { d:81, topic:'React + TypeScript juntos',
+      links:[['React TS','https://react.dev/learn/typescript']]},
+    { d:82, topic:'🛠 Agenda Compartilhada — Etapa Final: reescrever a UI em React + TypeScript (versão portfólio)', tag:'project',
+      links:[]},
+    { d:83, topic:'🛠 Agenda — Etapa Final: deploy no Vercel + README contando a evolução do projeto + apresentar', tag:'project',
+      links:[['Vercel','https://vercel.com']]},
+  ]},
+];
+
+// ── EXERCÍCIOS — FASE 2: DOM & ASYNC (dias 21–40) ─────────────────────
+const exercises = {
+  21: {
+    concept: "O browser não é só o JavaScript — ele tem várias partes: o BOM (Browser Object Model) dá acesso a coisas como window, location, history e navigator. O DOM (Document Object Model) é a árvore do seu HTML. O JS usa o objeto window como raiz global, então window.alert() é o mesmo que alert(). Entender essa separação evita confusão quando você ver referências a window vs document.",
+    easy: { label: '🟢 Fácil — explorando o window', text: 'No console do browser, explore o objeto global:', code: "window.innerWidth       // largura da janela\nwindow.location.href    // URL atual\nwindow.navigator.language // idioma do browser\ndocument === window.document // true" },
+    hard: { label: '🟠 Difícil — detectar ambiente', text: 'Escreva uma função que retorna informações do ambiente do browser de forma organizada:', code: "function infoAmbiente() {\n  return {\n    url: window.location.href,\n    idioma: navigator.language,\n    largura: window.innerWidth,\n    altura: window.innerHeight,\n    online: navigator.onLine\n  }\n}\nconsole.table(infoAmbiente())" }
+  },
+  22: {
+    concept: "O DOM é uma árvore. O browser lê seu HTML e cria um objeto para cada tag — chamado de nó (node). Existem nós de elemento (<div>, <p>), nós de texto (o conteúdo dentro das tags) e nós de comentário. Entender essa estrutura é o que separa quem \"usa\" o DOM de quem realmente entende o que está acontecendo.",
+    easy: { label: '🟢 Fácil — inspecionando nós', text: 'No console, explore os tipos de nós do document:', code: "document.nodeType        // 9 = Document\ndocument.body.nodeType   // 1 = Element\ndocument.body.firstChild // pode ser TextNode (espaço em branco!)\ndocument.body.firstElementChild // primeiro elemento de verdade" },
+    hard: { label: '🟠 Difícil — contando nós', text: 'Escreva uma função que percorre todos os filhos de um elemento e retorna um objeto com a contagem por tipo de nó:', code: "function contarNos(elemento) {\n  const resultado = { elements: 0, texts: 0, outros: 0 }\n  elemento.childNodes.forEach(no => {\n    if (no.nodeType === 1) resultado.elements++\n    else if (no.nodeType === 3) resultado.texts++\n    else resultado.outros++\n  })\n  return resultado\n}\n// teste: contarNos(document.body)" }
+  },
+  23: {
+    concept: "Com navegação no DOM você se move pela árvore sem precisar de querySelector. Isso é útil quando você já tem um elemento em mãos e quer acessar o pai, os irmãos ou os filhos. Propriedades principais: parentElement, children (só elementos), childNodes (todos os nós), firstElementChild, lastElementChild, nextElementSibling, previousElementSibling.",
+    easy: { label: '🟢 Fácil — subindo e descendo', text: 'Pegue qualquer elemento no console e navegue:', code: "const el = document.querySelector('p')\nel.parentElement          // quem contém esse parágrafo\nel.parentElement.children // todos os irmãos\nel.nextElementSibling     // próximo elemento no mesmo nível" },
+    hard: { label: '🟠 Difícil — encontrar o card pai', text: 'Dado um botão dentro de um card, suba na árvore até encontrar o elemento com classe "card":', code: "function encontrarCard(elemento) {\n  let atual = elemento\n  while (atual) {\n    if (atual.classList && atual.classList.contains('card')) return atual\n    atual = atual.parentElement\n  }\n  return null\n}\n// isso é exatamente o que .closest() faz por baixo!" }
+  },
+  24: {
+    concept: "querySelector retorna o primeiro elemento que bate com o seletor CSS. querySelectorAll retorna todos, como uma NodeList (parecida com array, mas não é — precisa de Array.from() para usar métodos de array). Use '#id' para IDs, '.classe' para classes, 'tag' para tags.",
+    easy: { label: '🟢 Fácil — selecionando elementos', text: 'No console de qualquer página, teste a diferença:', code: "document.querySelector('a')        // primeiro link\ndocument.querySelectorAll('a')     // todos os links\ndocument.querySelectorAll('a').length  // quantos?" },
+    hard: { label: '🟠 Difícil — highlight de elementos', text: 'Escreva uma função que recebe um seletor CSS e destaca todos os elementos encontrados com borda vermelha:', code: "function destacar(seletor) {\n  const elementos = document.querySelectorAll(seletor)\n  elementos.forEach(el => {\n    el.style.border = '2px solid red'\n  })\n  return elementos.length + ' elementos destacados'\n}" }
+  },
+  25: {
+    concept: "Atributos HTML (como id, class, href) existem no HTML. Propriedades JS são o reflexo desses atributos no objeto DOM — às vezes com nomes diferentes (class vira className). O dataset permite criar atributos customizados com data-* que ficam acessíveis via element.dataset.nomeDoAtributo.",
+    easy: { label: '🟢 Fácil — atributo vs propriedade', text: 'No console, veja a diferença entre getAttribute e a propriedade:', code: "const link = document.querySelector('a')\nlink.getAttribute('href')   // atributo (string crua)\nlink.href                   // propriedade (URL completa)\nlink.className              // propriedade de 'class'" },
+    hard: { label: '🟠 Difícil — usando dataset', text: 'Escreva uma função que filtra elementos de uma lista pelo autor via dataset:', code: "// HTML: <li data-id=\"1\" data-author=\"Liliane\">Reunião</li>\nfunction filtrarPorAutor(autor) {\n  const itens = document.querySelectorAll('li')\n  return Array.from(itens).filter(item => item.dataset.author === autor)\n}" }
+  },
+  26: {
+    concept: "Para criar elementos via JS: createElement cria, textContent define o texto, append/appendChild insere no DOM. Para remover: element.remove(). innerHTML é mais rápido mas perigoso com dados do usuário (XSS). Prefira createElement para dados dinâmicos.",
+    easy: { label: '🟢 Fácil — criando e inserindo', text: 'No console, crie um parágrafo e insira no body:', code: "const p = document.createElement('p')\np.textContent = 'Olá, DOM!'\ndocument.body.append(p)" },
+    hard: { label: '🟠 Difícil — renderizando eventos', text: 'Escreva uma função que renderiza um array de eventos como itens de lista:', code: "const eventos = [\n  { id: 1, title: 'Reunião', event_date: '2026-07-01' },\n  { id: 2, title: 'Consulta', event_date: '2026-07-10' }\n]\nfunction renderizarEventos(ul, eventos) {\n  ul.innerHTML = ''\n  eventos.forEach(ev => {\n    const li = document.createElement('li')\n    li.textContent = ev.title + ' — ' + ev.event_date\n    li.dataset.id = ev.id\n    ul.append(li)\n  })\n}" }
+  },
+  27: {
+    concept: "Há duas formas de estilizar via JS: element.style.propriedade muda o estilo inline diretamente. element.classList.add/remove/toggle manipula classes CSS — muito preferível porque separa estilo de lógica. toggle adiciona a classe se não existe, remove se existe.",
+    easy: { label: '🟢 Fácil — classList na prática', text: 'No console, teste o toggle:', code: "const el = document.body\nel.classList.add('dark')\nel.classList.contains('dark')  // true\nel.classList.toggle('dark')    // remove\nel.classList.toggle('dark')    // adiciona de volta" },
+    hard: { label: '🟠 Difícil — card com status', text: 'Crie uma função que aplica a classe de status correta num card, removendo as outras:', code: "function setStatus(card, status) {\n  const classes = ['pendente', 'confirmado', 'cancelado']\n  card.classList.remove(...classes)\n  card.classList.add(status)\n}" }
+  },
+  28: {
+    concept: "addEventListener registra uma função (handler) para ser chamada quando um evento acontece. O objeto event passado automaticamente pro handler contém: event.target (qual elemento foi clicado) e event.preventDefault() (cancela o comportamento padrão, como navegar num link).",
+    easy: { label: '🟢 Fácil — seu primeiro evento', text: 'No console, adicione um clique no body e veja o event.target:', code: "document.body.addEventListener('click', function(event) {\n  console.log('Clicou em:', event.target)\n  console.log('Tag:', event.target.tagName)\n})" },
+    hard: { label: '🟠 Difícil — botão de excluir', text: 'Crie uma função que adiciona um botão Excluir a cada card. Ao clicar, o card é removido do DOM:', code: "function adicionarBotaoExcluir(card, id) {\n  const btn = document.createElement('button')\n  btn.textContent = 'Excluir'\n  btn.addEventListener('click', function(event) {\n    event.stopPropagation()\n    console.log('Excluindo evento ID:', id)\n    card.remove()\n  })\n  card.append(btn)\n}" }
+  },
+  29: {
+    concept: "Quando você clica num elemento filho, o evento sobe pelos ancestrais — isso é bubbling. Você pode parar com stopPropagation(). Capturing é o caminho inverso (do topo para o filho) — menos usado. Entender bubbling é essencial para event delegation (dia 30).",
+    easy: { label: '🟢 Fácil — vendo o bubbling', text: 'Crie dois divs aninhados e observe a propagação:', code: "// <div id=\"pai\"><div id=\"filho\">clique</div></div>\ndocument.getElementById('pai').addEventListener('click', () => console.log('PAI'))\ndocument.getElementById('filho').addEventListener('click', () => console.log('FILHO'))\n// Clique no filho — qual ordem aparece?" },
+    hard: { label: '🟠 Difícil — propagação seletiva', text: 'Clicar no card abre detalhes. Clicar no botão Excluir dentro do card exclui sem abrir detalhes:', code: "function setupCard(card) {\n  card.addEventListener('click', () => {\n    console.log('Abrindo detalhes...')\n  })\n  const btnExcluir = card.querySelector('.btn-excluir')\n  btnExcluir.addEventListener('click', (event) => {\n    event.stopPropagation()\n    console.log('Excluindo...')\n    card.remove()\n  })\n}" }
+  },
+  30: {
+    concept: "Event delegation: em vez de adicionar um listener em cada filho, você adiciona um só no pai e usa event.target para descobrir qual filho foi clicado. É mais eficiente e funciona para elementos adicionados dinamicamente depois.",
+    easy: { label: '🟢 Fácil — delegation básico', text: 'Um listener só na ul que detecta cliques em qualquer li:', code: "// <ul id=\"lista\"><li>Evento A</li><li>Evento B</li></ul>\ndocument.getElementById('lista').addEventListener('click', (event) => {\n  if (event.target.tagName === 'LI') {\n    console.log('Clicou em:', event.target.textContent)\n  }\n})" },
+    hard: { label: '🟠 Difícil — delegation com data-id', text: 'Use delegation para detectar cliques em botões de detalhe e excluir, identificando o evento pelo data-id:', code: "document.getElementById('lista-eventos').addEventListener('click', (event) => {\n  const btn = event.target.closest('button')\n  if (!btn) return\n  const id = btn.closest('[data-id]').dataset.id\n  if (btn.classList.contains('btn-detalhe')) console.log('Detalhes do evento', id)\n  if (btn.classList.contains('btn-excluir')) console.log('Excluir evento', id)\n})" }
+  },
+  31: {
+    concept: "Formulários em JS: acesse valores com input.value (sempre string). Escute o submit no form e chame event.preventDefault() para não recarregar a página. Valide antes de usar: verifique se o campo está vazio, se a data é válida, etc.",
+    easy: { label: '🟢 Fácil — capturando o submit', text: 'Formulário básico sem recarregar a página:', code: "// <form id=\"form\"><input id=\"titulo\" /><button>Salvar</button></form>\ndocument.getElementById('form').addEventListener('submit', (event) => {\n  event.preventDefault()\n  const titulo = document.getElementById('titulo').value\n  console.log('Título digitado:', titulo)\n})" },
+    hard: { label: '🟠 Difícil — formulário da Agenda', text: 'Valide título, data e responsável. A data não pode ser no passado. Mostre erros sem alert():', code: "function validarFormulario(titulo, data, responsavel) {\n  const erros = []\n  if (!titulo.trim()) erros.push('Título obrigatório')\n  if (!data) erros.push('Data obrigatória')\n  else if (new Date(data) < new Date()) erros.push('Data não pode ser no passado')\n  if (!responsavel.trim()) erros.push('Responsável obrigatório')\n  return erros\n}" }
+  },
+  32: {
+    concept: "A Etapa 2 da Agenda junta tudo da Fase DOM: interface visual com HTML+CSS+JS puro, renderizar eventos no DOM, eventos para abrir/fechar modais e adicionar/excluir eventos, tudo integrado com o localStorage que você já fez na Etapa 1.",
+    easy: { label: '🟢 Fácil — estrutura do calendário', text: 'Antes de codar, esboce a estrutura HTML que você vai precisar:', code: "// <div id=\"calendario\">\n//   <div class=\"cabecalho-mes\">Julho 2026</div>\n//   <div class=\"grid-dias\">\n//     <div class=\"dia\" data-date=\"2026-07-01\">\n//       1\n//       <span class=\"evento-ponto\"></span>\n//     </div>\n//   </div>\n// </div>\n// <div id=\"modal-evento\" class=\"hidden\">...</div>" },
+    hard: { label: '🟠 Difícil — renderizar o mês', text: 'Escreva uma função que recebe ano e mês e retorna um array com todos os dias como objetos {date, eventos[]}:', code: "function gerarMes(ano, mes) {\n  // new Date(ano, mes, 0).getDate() retorna quantos dias tem o mês\n  // mes em JS é 0-indexed (janeiro = 0)\n  // para cada dia, filtre os eventos que batem com a data\n  // retorne array de { date: 'YYYY-MM-DD', eventos: [] }\n}" }
+  },
+  33: {
+    concept: "Callback é uma função passada como argumento para outra função, para ser chamada depois. É a base do JS assíncrono. O problema é o callback hell: callbacks dentro de callbacks formam uma pirâmide difícil de ler. Promises (dia 34) resolvem isso.",
+    easy: { label: '🟢 Fácil — callback simples', text: 'Veja o padrão: você passa o que fazer depois como função:', code: "function buscarEvento(id, callback) {\n  setTimeout(() => {\n    const evento = { id, title: 'Reunião' }\n    callback(evento)\n  }, 1000)\n}\n\nbuscarEvento(1, (evento) => {\n  console.log('Recebi:', evento)\n})" },
+    hard: { label: '🟠 Difícil — callback hell', text: 'Simule buscar usuário, depois eventos, depois filtrar futuros — tudo com callbacks aninhados:', code: "function buscarUsuario(id, cb) {\n  setTimeout(() => cb({ id, nome: 'Liliane' }), 500)\n}\nfunction buscarEventos(userId, cb) {\n  setTimeout(() => cb([{ title: 'Reunião', data: '2026-08-01' }]), 500)\n}\nfunction filtrarFuturos(eventos, cb) {\n  cb(eventos.filter(e => new Date(e.data) > new Date()))\n}\n// encadeie as três funções com callbacks\n// observe a pirâmide que se forma" }
+  },
+  34: {
+    concept: "Promise representa um valor que estará disponível no futuro. Estados: pending (esperando), fulfilled (deu certo — .then()), rejected (deu errado — .catch()). Em vez de callbacks aninhados, você encadeia .then() — o código fica linear e mais fácil de ler.",
+    easy: { label: '🟢 Fácil — criando uma Promise', text: 'Veja a estrutura básica:', code: "const minhaPromise = new Promise((resolve, reject) => {\n  const deuCerto = true\n  if (deuCerto) resolve('Sucesso!')\n  else reject('Algo deu errado')\n})\n\nminhaPromise\n  .then(resultado => console.log(resultado))\n  .catch(erro => console.log(erro))" },
+    hard: { label: '🟠 Difícil — reescrever callback em Promise', text: 'Pegue buscarEvento do dia 33 e reescreva com Promise. Encadeie para buscar evento e depois o responsável:', code: "function buscarEvento(id) {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (id > 0) resolve({ id, title: 'Reunião', responsavelId: 1 })\n      else reject('ID inválido')\n    }, 500)\n  })\n}\n// encadeie com .then() — sem callbacks aninhados" }
+  },
+  35: {
+    concept: "Você pode encadear .then() porque cada um retorna uma nova Promise. Se um .then() lança um erro, o próximo .catch() no final captura — você não precisa de .catch() em cada etapa. Isso é tratamento de erro centralizado.",
+    easy: { label: '🟢 Fácil — encadeamento simples', text: 'Encadeie transformações sobre um valor via .then():', code: "Promise.resolve(10)\n  .then(n => n * 2)\n  .then(n => n + 5)\n  .then(n => console.log('Resultado:', n))\n  .catch(e => console.log('Erro:', e))" },
+    hard: { label: '🟠 Difícil — cadeia com erro no meio', text: 'Busque um evento, valide que ele existe, busque o responsável e formate a saída:', code: "buscarEvento(1)\n  .then(evento => {\n    if (!evento) throw new Error('Evento não encontrado')\n    return buscarResponsavel(evento.responsavelId)\n  })\n  .then(responsavel => 'Evento criado por ' + responsavel.nome)\n  .then(msg => console.log(msg))\n  .catch(erro => console.log('Ops:', erro.message))" }
+  },
+  36: {
+    concept: "Erros em promises não funcionam como try/catch normal — se você não tiver um .catch() no final da cadeia, o erro some silenciosamente. Um .catch() no final captura qualquer erro de qualquer .then() anterior. Você também pode lançar erros manualmente com throw dentro de um .then().",
+    easy: { label: '🟢 Fácil — catch no final da cadeia', text: 'Veja como um erro em qualquer .then() é capturado pelo .catch() do final:', code: "Promise.resolve('dados')\n  .then(d => { throw new Error('algo deu errado') })\n  .then(d => console.log('nunca chega aqui'))\n  .catch(e => console.log('Capturado:', e.message))" },
+    hard: { label: '🟠 Difícil — erro condicional', text: 'Busque um evento. Se não encontrar, lance um erro personalizado com código NOT_FOUND:', code: "function buscarEventoPorId(id) {\n  return Promise.resolve(id === 1 ? { id: 1, title: 'Reunião' } : null)\n}\n\nbuscarEventoPorId(99)\n  .then(evento => {\n    if (!evento) {\n      const err = new Error('Evento não encontrado')\n      err.code = 'NOT_FOUND'\n      throw err\n    }\n    return evento\n  })\n  .catch(e => {\n    if (e.code === 'NOT_FOUND') console.log('404:', e.message)\n    else console.log('Erro inesperado:', e.message)\n  })" }
+  },
+  37: {
+    concept: "async/await é açúcar sintático sobre Promises. Uma função async sempre retorna uma Promise. await pausa a execução até a Promise resolver — o código parece síncrono mas não bloqueia o browser. Erros são capturados com try/catch, igual a código síncrono normal.",
+    easy: { label: '🟢 Fácil — async/await básico', text: 'Reescreva o encadeamento do dia 35 com async/await:', code: "async function buscarDados() {\n  const evento = await buscarEvento(1)\n  const responsavel = await buscarResponsavel(evento.responsavelId)\n  console.log('Evento criado por ' + responsavel.nome)\n}\n\nbuscarDados()" },
+    hard: { label: '🟠 Difícil — async com erro por item', text: 'Busque todos os eventos e para cada um busque o responsável. Se um falhar, continue com os outros:', code: "async function buscarEventosComResponsaveis(eventos) {\n  const resultado = []\n  for (const evento of eventos) {\n    try {\n      const resp = await buscarResponsavel(evento.responsavelId)\n      resultado.push({ ...evento, responsavel: resp.nome })\n    } catch (e) {\n      resultado.push({ ...evento, responsavel: 'Desconhecido' })\n    }\n  }\n  return resultado\n}" }
+  },
+  38: {
+    concept: "fetch() faz requisições HTTP e retorna uma Promise. O padrão é sempre dois awaits: um para a resposta chegar e outro para converter o corpo (response.json()). Sempre verifique response.ok antes de usar os dados — um status 404 não rejeita a Promise automaticamente.",
+    easy: { label: '🟢 Fácil — seu primeiro fetch', text: 'No console do browser, busque dados de uma API pública:', code: "const res = await fetch('https://brasilapi.com.br/api/cep/v1/01310100')\nconst dados = await res.json()\nconsole.log(dados)" },
+    hard: { label: '🟠 Difícil — fetch com validação', text: 'Busque os feriados de 2026 na BrasilAPI e retorne só os do segundo semestre:', code: "async function feriadosSegundoSemestre(ano) {\n  const res = await fetch('https://brasilapi.com.br/api/feriados/v1/' + ano)\n  if (!res.ok) throw new Error('Erro ' + res.status)\n  const feriados = await res.json()\n  return feriados.filter(f => f.date >= ano + '-07-01')\n}" }
+  },
+  39: {
+    concept: "localStorage salva pares chave-valor no browser — os dados persistem mesmo fechando o browser. Só salva strings, então use JSON.stringify para salvar objetos e JSON.parse para ler. sessionStorage tem a mesma API mas apaga ao fechar a aba.",
+    easy: { label: '🟢 Fácil — round-trip de dados', text: 'Salve e leia um objeto completo:', code: "const config = { tema: 'escuro', idioma: 'pt-BR' }\nlocalStorage.setItem('config', JSON.stringify(config))\n\nconst lido = JSON.parse(localStorage.getItem('config'))\nconsole.log(lido.tema) // 'escuro'" },
+    hard: { label: '🟠 Difícil — cache com expiração', text: 'Escreva funções para salvar e recuperar feriados em cache com expiração de 24h:', code: "function salvarCache(ano, feriados) {\n  const cache = { feriados, savedAt: Date.now() }\n  localStorage.setItem('feriados-' + ano, JSON.stringify(cache))\n}\n\nfunction lerCache(ano) {\n  const raw = localStorage.getItem('feriados-' + ano)\n  if (!raw) return null\n  const cache = JSON.parse(raw)\n  const umDia = 24 * 60 * 60 * 1000\n  if (Date.now() - cache.savedAt > umDia) return null\n  return cache.feriados\n}" }
+  },
+  40: {
+    concept: "A BrasilAPI oferece um endpoint público de feriados: GET https://brasilapi.com.br/api/feriados/v1/{ano}. Retorna um array de objetos com date (YYYY-MM-DD), name e type. Nenhuma autenticação necessária — ideal para integrar na Agenda Compartilhada.",
+    easy: { label: '🟢 Fácil — testando a API', text: 'No console do browser, busque os feriados de 2026 e veja o formato:', code: "const res = await fetch('https://brasilapi.com.br/api/feriados/v1/2026')\nconst feriados = await res.json()\nconsole.log(feriados[0])     // formato de um feriado\nconsole.log(feriados.length) // quantos feriados tem?" },
+    hard: { label: '🟠 Difícil — Map de feriados', text: 'Busque os feriados e retorne um Map onde a chave é a data e o valor é o nome:', code: "async function carregarFeriados(ano) {\n  const res = await fetch('https://brasilapi.com.br/api/feriados/v1/' + ano)\n  if (!res.ok) throw new Error('Falha ao buscar feriados')\n  const feriados = await res.json()\n  return new Map(feriados.map(f => [f.date, f.name]))\n  // feriadosMap.get('2026-09-07') === 'Independência do Brasil'\n}" }
+  },
+  41: {
+    concept: "Cache é guardar o resultado de uma operação custosa (como uma requisição à API) para não precisar repetir. No localStorage, você salva os dados junto com um timestamp. Na próxima vez, você verifica se o cache ainda é válido antes de fazer uma nova requisição.",
+    easy: { label: '🟢 Fácil — verificando o cache', text: 'Simule a lógica de verificar se um cache existe e é recente:', code: "function cacheValido(chave, maxIdadeMs) {\n  const raw = localStorage.getItem(chave)\n  if (!raw) return false\n  const { savedAt } = JSON.parse(raw)\n  return Date.now() - savedAt < maxIdadeMs\n}\n\nconsole.log(cacheValido('feriados-2026', 24 * 60 * 60 * 1000))" },
+    hard: { label: '🟠 Difícil — fetch com cache automático', text: 'Verifique o cache antes de fazer fetch. Se válido, retorne dele. Caso contrário, busque da API e salve:', code: "async function feriadosComCache(ano) {\n  const chave = 'feriados-' + ano\n  const raw = localStorage.getItem(chave)\n  if (raw) {\n    const cache = JSON.parse(raw)\n    if (Date.now() - cache.savedAt < 24 * 60 * 60 * 1000) {\n      console.log('Usando cache')\n      return cache.feriados\n    }\n  }\n  const res = await fetch('https://brasilapi.com.br/api/feriados/v1/' + ano)\n  const feriados = await res.json()\n  localStorage.setItem(chave, JSON.stringify({ feriados, savedAt: Date.now() }))\n  return feriados\n}" }
+  },
+  42: {
+    concept: "Loading state é o estado visual que aparece enquanto uma operação assíncrona está em andamento. Você exibe um indicador antes do fetch e remove depois. Tratamento de erro significa capturar exceções e mostrar mensagens úteis — nunca deixar a tela simplesmente travar.",
+    easy: { label: '🟢 Fácil — loading simples', text: 'Padrão básico de loading state com DOM:', code: "async function carregarComLoading() {\n  const status = document.getElementById('status')\n  status.textContent = 'Carregando...'\n  try {\n    const res = await fetch('https://brasilapi.com.br/api/feriados/v1/2026')\n    const dados = await res.json()\n    status.textContent = dados.length + ' feriados carregados'\n  } catch (e) {\n    status.textContent = 'Erro ao carregar feriados'\n  }\n}" },
+    hard: { label: '🟠 Difícil — fetch com retry', text: 'Tente buscar os feriados até 3 vezes antes de desistir, atualizando o status no DOM a cada tentativa:', code: "async function buscarComRetry(ano, tentativasMax) {\n  tentativasMax = tentativasMax || 3\n  for (let i = 1; i <= tentativasMax; i++) {\n    try {\n      document.getElementById('status').textContent = 'Tentativa ' + i + '/' + tentativasMax\n      const res = await fetch('https://brasilapi.com.br/api/feriados/v1/' + ano)\n      if (!res.ok) throw new Error('Status ' + res.status)\n      const dados = await res.json()\n      document.getElementById('status').textContent = 'Carregado!'\n      return dados\n    } catch (e) {\n      if (i === tentativasMax) throw e\n      await new Promise(r => setTimeout(r, 1000 * i))\n    }\n  }\n}" }
+  },
+  43: {
+    concept: "Revisão do bloco DOM e Async. Você passou de manipular arrays no console para construir interfaces reais no browser, buscar dados de APIs externas e gerenciar estado assíncrono. Os padrões que você usou aqui — delegation, cache, loading state — são os mesmos do React.",
+    easy: { label: '🟢 Fácil — checklist de revisão', text: 'Teste seu entendimento respondendo no console:', code: "// 1. Qual a diferença entre querySelector e querySelectorAll?\n// 2. Por que usar classList.toggle em vez de style.display?\n// 3. O que é event delegation e quando usar?\n// 4. Qual a diferença entre .then() e async/await?\n// 5. Por que response.ok precisa ser verificado no fetch?" },
+    hard: { label: '🟠 Difícil — mini app completo', text: 'Busque feriados da BrasilAPI, mostre loading, salve no localStorage, e renderize a lista com event delegation para mostrar o tipo de cada feriado ao clicar:', code: "// Este exercício junta: fetch + async/await + localStorage\n// + createElement + event delegation + error handling\n// Sem framework — JS puro.\n// Se conseguir fazer isso, você está pronto para o DOM!" }
+  }
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let done = new Set();
+let currentPhase = 'all';
+let saveTimer = null;
+const totalDays = plan.reduce((a,w)=>a+w.days.length,0);
+
+// ── STORAGE ────────────────────────────────────────────────────────────
+function loadDone(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const arr = JSON.parse(raw);
+      done = new Set(arr);
+    } else {
+      // primeira vez: marcar defaults
+      plan.forEach(w=>w.days.forEach(d=>{ if(d.done_default) done.add(d.d); }));
+      saveDone(false);
+    }
+  } catch(e){
+    plan.forEach(w=>w.days.forEach(d=>{ if(d.done_default) done.add(d.d); }));
+  }
+  render();
+}
+
+function saveDone(showStatus=true){
+  if(showStatus) setStatus('salvando...');
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
+    if(showStatus){ setStatus('✓ salvo'); setTimeout(()=>setStatus(''),2000); }
+  } catch(e){
+    if(showStatus) setStatus('erro ao salvar');
+  }
+}
+
+function setStatus(t){ const el=document.getElementById('save-status'); if(el)el.textContent=t; }
+
+// ── TOGGLE ─────────────────────────────────────────────────────────────
+function toggle(d){
+  done.has(d)?done.delete(d):done.add(d);
+  render();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>saveDone(true), 700);
+  const dayData = plan.flatMap(w=>w.days).find(x=>x.d===d);
+  if(dayData && done.has(d)){
+    showToast('Dia '+d+' concluído ✓');
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── DATE CALC ──────────────────────────────────────────────────────────
+// Dia 1 = 19/05/2026 (segunda-feira), 5 dias úteis por semana (seg–sex)
+const START_DATE = new Date(2026, 4, 19); // mês 4 = maio (0-indexed)
+
+function getDayDate(dayNum) {
+  // dayNum começa em 1; adiciona (dayNum-1) dias úteis a partir de START_DATE
+  let count = 0;
+  let d = new Date(START_DATE);
+  while(count < dayNum - 1) {
+    d.setDate(d.getDate() + 1);
+    const dow = d.getDay(); // 0=dom, 6=sab
+    if(dow !== 0 && dow !== 6) count++;
+  }
+  return d;
+}
+
+function formatDate(d) {
+  const days = ['dom','seg','ter','qua','qui','sex','sáb'];
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  return days[d.getDay()]+' '+dd+'/'+mm;
+}
+
+// ── NEXT DAY ───────────────────────────────────────────────────────────
+function getNextDay(){
+  const all = plan.flatMap(w=>w.days);
+  const next = all.find(d=>!done.has(d.d));
+  return next ? 'Dia '+next.d : '🎉 Fim!';
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function updateStats(){
+  const n = done.size;
+  document.getElementById('s-done').textContent = n;
+  document.getElementById('s-total').textContent = totalDays;
+  document.getElementById('s-pct').textContent = Math.round(n/totalDays*100)+'%';
+  document.getElementById('s-next').textContent = getNextDay();
+  document.getElementById('prog-fill').style.width = Math.round(n/totalDays*100)+'%';
+  document.getElementById('prog-label').textContent = n+' / '+totalDays+' dias';
+}
+
+function renderPhases(){
+  const c=document.getElementById('phases');
+  c.innerHTML = phases.map(p=>`
+    <button class="phase-btn${currentPhase===p.id?' active':''}" onclick="setPhase('${p.id}')">${p.label}</button>
+  `).join('');
+}
+
+function setPhase(id){ currentPhase=id; render(); }
+
+function toggleExpand(dayNum, event) {
+  event.stopPropagation();
+  const card = document.querySelector(`.day[data-day="${dayNum}"]`);
+  const panel = document.querySelector(`.day-expand-panel[data-day="${dayNum}"]`);
+  if (!card || !panel) return;
+  const isOpen = panel.classList.toggle('open');
+  card.classList.toggle('expanded', isOpen);
+  const btn = card.querySelector('.expand-btn');
+  if (btn) btn.textContent = isOpen ? '▲ Fechar exercícios' : '▼ Ver exercícios';
+}
+
+function esc(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildExerciseHtml(dayNum) {
+  const ex = exercises[dayNum];
+  if (!ex) return '';
+  return `<div class="day-expand-panel" data-day="${dayNum}">
+    <div class="ex-concept"><strong>📖 Conceito</strong>${esc(ex.concept)}</div>
+    <div class="ex-block">
+      <div class="ex-label easy">${esc(ex.easy.label)}</div>
+      <div class="ex-text">${esc(ex.easy.text)}<div class="ex-code">${esc(ex.easy.code)}</div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-label hard">${esc(ex.hard.label)}</div>
+      <div class="ex-text">${esc(ex.hard.text)}<div class="ex-code">${esc(ex.hard.code)}</div></div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  updateStats();
+  renderPhases();
+
+  const weeks = currentPhase==='all' ? plan : plan.filter(w=>w.phase===currentPhase);
+  const phaseInfo = phases.find(p=>p.id===currentPhase);
+  let html='';
+
+  if(phaseInfo && phaseInfo.title){
+    html+=`<div class="phase-header">
+      <div class="phase-title">${phaseInfo.title}</div>
+      <div class="phase-desc">${phaseInfo.desc}</div>
+    </div>`;
+  }
+
+  weeks.forEach(w=>{
+    const wDone = w.days.filter(d=>done.has(d.d)).length;
+    let panelsHtml = '';
+    html+=`<div class="week">
+      <div class="week-title">
+        <span class="week-num">${w.wlabel}</span>
+        <span class="week-progress">${wDone}/${w.days.length}</span>
+      </div>
+      <div class="days">`;
+    w.days.forEach(day=>{
+      const isDone = done.has(day.d);
+      const allDays = plan.flatMap(x=>x.days);
+      const nextUndone = allDays.find(x=>!done.has(x.d));
+      const isCurrent = nextUndone && nextUndone.d===day.d;
+      const linksHtml = day.links.map(([t,u])=>`<a class="day-link" href="${u}" target="_blank">${t}</a>`).join('');
+      const tagHtml = day.tag==='project'
+        ? '<span class="day-tag tag-project">🛠 projeto</span>'
+        : day.tag==='review'
+        ? '<span class="day-tag tag-review">📋 revisão</span>'
+        : '';
+      const dayDate = getDayDate(day.d);
+      const dateStr = formatDate(dayDate);
+      const hasEx = !!exercises[day.d];
+      html+=`<div class="day${isDone?' done':''}${isCurrent?' current':''}" data-day="${day.d}">
+        <div class="day-num">
+          ${isDone?'<span class="check">✓</span>':''}
+          ${isCurrent&&!isDone?'<span class="dot"></span>':''}
+          Dia ${day.d} <span class="day-date">${dateStr}</span>
+        </div>
+        ${tagHtml}
+        <div class="day-topic">${day.topic}</div>
+        ${linksHtml?`<div class="day-links">${linksHtml}</div>`:''}
+        ${hasEx?`<button class="expand-btn" onclick="toggleExpand(${day.d}, event)">▼ Ver exercícios</button>`:''}
+        <button class="mark-btn" onclick="toggle(${day.d})">${isDone?'✓ Feito':'Marcar feito'}</button>
+      </div>`;
+      if(hasEx) panelsHtml += buildExerciseHtml(day.d);
+    });
+    html+=`</div>${panelsHtml}</div>`;
+  });
+
+  if(currentPhase==='ts_react'||currentPhase==='all'){
+    html+=`<div class="ext-box">
+      <h3>Documentações oficiais</h3>
+      <p>Para as semanas 13–16, use as docs oficiais como referência principal.</p>
+      <div class="ext-links">
+        <a class="ext-link" href="https://www.typescriptlang.org/docs/" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          TypeScript docs
+        </a>
+        <a class="ext-link" href="https://react.dev/learn" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          React docs
+        </a>
+        <a class="ext-link" href="https://react.dev/learn/typescript" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          React + TypeScript
+        </a>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('content').innerHTML = html;
+}
+
+loadDone();
+</script>
+</body>
+</html>

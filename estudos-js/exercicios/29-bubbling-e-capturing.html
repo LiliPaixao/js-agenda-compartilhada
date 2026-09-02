@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dia 29 — Bubbling, capturing e stopPropagation</title>
+<style>
+  body { font-family: sans-serif; max-width: 700px; margin: 40px auto; line-height: 1.5; padding: 0 16px; }
+  section { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+  h2 { margin-top: 0; font-size: 16px; }
+  .task { background: #f5f5f5; padding: 10px; border-left: 3px solid #999; font-size: 14px; margin-bottom: 12px; white-space: pre-wrap; }
+  button { margin-right: 6px; margin-bottom: 6px; }
+  #log { background: #111; color: #0f0; font-family: monospace; padding: 10px; height: 140px; overflow-y: auto; white-space: pre-wrap; font-size: 12px; margin-bottom: 24px; }
+
+  /* apoio visual */
+  .caixa-externa {
+    background: #cce5ff;
+    border: 2px solid #339;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .caixa-media {
+    background: #d4edda;
+    border: 2px solid #3a3;
+    padding: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .caixa-interna {
+    background: #fff3cd;
+    border: 2px solid #a80;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  /* seção 4 — card com botão excluir */
+  .card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 14px;
+    margin: 8px 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .card:hover { background: #e9ecef; }
+  .card-titulo { font-weight: bold; margin-bottom: 4px; }
+  .card-data { font-size: 13px; color: #666; }
+  .btn-excluir {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  /* seção 5 — tooltip */
+  .item-com-tooltip {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #6c757d;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 4px;
+    position: relative;
+  }
+  .tooltip-box {
+    display: none;
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<h1>Dia 29 — Bubbling, capturing e stopPropagation</h1>
+<p><strong>Status:</strong> exercícios 5 e 6 ainda pendentes.</p>
+<p>Preencha cada função no &lt;script&gt; no final do arquivo. Use os botões pra testar. Tudo que você fizer com <code>console.log</code> aparece na caixinha preta abaixo também.</p>
+<p><strong>Pendentes:</strong> todos os exercícios abaixo. Leitura: <a href="https://javascript.info/bubbling-and-capturing" target="_blank">javascript.info/bubbling-and-capturing</a></p>
+
+<div id="log"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>1. Observando o bubbling — evento sobe pela árvore</h2>
+  <div class="caixa-externa" id="externa1">
+    externa (azul)
+    <div class="caixa-media" id="media1">
+      média (verde)
+      <div class="caixa-interna" id="interna1">interna (amarela) — clique aqui</div>
+    </div>
+  </div>
+  <div class="task">Bubbling = quando você clica num elemento filho, o evento "sobe" pelos ancestrais automaticamente.
+
+TODO: implemente ativarBubbling().
+  - Adicione um listener de "click" em cada um dos três elementos:
+    #externa1, #media1, #interna1
+  - Cada handler deve logar o id do elemento: ex. "clique em: interna1"
+  - Clique na caixa amarela (interna) e observe a ordem dos logs.
+  - Pergunta: qual elemento dispara primeiro? O mais interno ou o mais externo?</div>
+  <button onclick="ativarBubbling()">ativar listeners</button>
+  <button onclick="limparLog()">limpar log</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>2. event.target vs event.currentTarget no bubbling</h2>
+  <div class="caixa-externa" id="externa2">
+    externa (azul) — listener aqui
+    <div class="caixa-media" id="media2">
+      média (verde)
+      <div class="caixa-interna" id="interna2">interna (amarela) — clique aqui</div>
+    </div>
+  </div>
+  <div class="task">Quando o evento sobe, duas propriedades ficam diferentes:
+  event.target      — quem foi clicado DE VERDADE (não muda durante o bubbling)
+  event.currentTarget — quem tem o listener que está sendo executado AGORA
+
+TODO: implemente ativarComparacao().
+  - Adicione um listener de "click" APENAS em #externa2
+  - O handler deve logar:
+      "target: " + event.target.id
+      "currentTarget: " + event.currentTarget.id
+  - Clique na caixa interna e observe a diferença entre os dois.
+  - Clique na caixa externa diretamente. Os dois ficam iguais ou diferentes?</div>
+  <button onclick="ativarComparacao()">ativar listener</button>
+  <button onclick="limparLog()">limpar log</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>3. stopPropagation() — parar o bubbling</h2>
+  <div class="caixa-externa" id="externa3">
+    externa (azul) — tem listener
+    <div class="caixa-media" id="media3">
+      média (verde) — tem listener COM stopPropagation
+      <div class="caixa-interna" id="interna3">interna (amarela) — clique aqui</div>
+    </div>
+  </div>
+  <div class="task">stopPropagation() impede o evento de continuar subindo.
+
+TODO: implemente ativarStopPropagation().
+  - Adicione listener de "click" em #externa3: loga "externa3 recebeu o clique"
+  - Adicione listener de "click" em #media3: loga "media3 recebeu o clique"
+    e chama event.stopPropagation()
+  - Adicione listener de "click" em #interna3: loga "interna3 recebeu o clique"
+
+  - Clique na interna. Quais logs aparecem?
+  - Clique na média. Quais logs aparecem?
+  - Clique na externa. Quais logs aparecem?
+  - O stopPropagation na média impede o quê exatamente?</div>
+  <button onclick="ativarStopPropagation()">ativar listeners</button>
+  <button onclick="limparLog()">limpar log</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>4. Caso real — card da Agenda com botão excluir</h2>
+  <div id="lista-eventos">
+    <div class="card" data-id="1">
+      <div class="card-titulo">Reunião com professora</div>
+      <div class="card-data">2026-08-10</div>
+      <button class="btn-excluir">Excluir</button>
+    </div>
+    <div class="card" data-id="2">
+      <div class="card-titulo">Consulta médica</div>
+      <div class="card-data">2026-08-15</div>
+      <button class="btn-excluir">Excluir</button>
+    </div>
+    <div class="card" data-id="3">
+      <div class="card-titulo">Aniversário da escola</div>
+      <div class="card-data">2026-08-20</div>
+      <button class="btn-excluir">Excluir</button>
+    </div>
+  </div>
+  <div class="task">Na Agenda Compartilhada, clicar no card abre os detalhes.
+Clicar no botão "Excluir" dentro do card deve excluir — SEM abrir os detalhes.
+
+TODO: implemente configurarCards().
+  - Para cada .card, adicione listener de "click" que loga:
+    "abrindo detalhes do evento " + card.dataset.id
+  - Para cada .btn-excluir, adicione listener de "click" que:
+    1. Chama stopPropagation() — para não abrir os detalhes
+    2. Loga "excluindo evento " + id (pega o data-id do card pai com parentElement)
+    3. Remove o card do DOM
+
+  - Teste: clicar no card deve só abrir detalhes.
+  - Teste: clicar em Excluir deve só excluir, sem logar "abrindo detalhes".</div>
+  <button onclick="configurarCards()">ativar cards</button>
+  <button onclick="limparLog()">limpar log</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>5. Exercício javascript.info — Tooltip ao passar o mouse</h2>
+  <div style="margin: 10px 0;">
+    <span class="item-com-tooltip" data-tooltip="Criar novo evento na agenda">
+      Novo evento
+      <div class="tooltip-box"></div>
+    </span>
+    <span class="item-com-tooltip" data-tooltip="Ver todos os eventos do mês">
+      Ver mês
+      <div class="tooltip-box"></div>
+    </span>
+    <span class="item-com-tooltip" data-tooltip="Exportar agenda como JSON">
+      Exportar
+      <div class="tooltip-box"></div>
+    </span>
+  </div>
+  <div class="task">Do enunciado original (adaptado): "Mostre um tooltip ao passar o mouse sobre elementos."
+
+TODO: implemente configurarTooltips().
+  - Pegue todos os .item-com-tooltip com querySelectorAll
+  - Para cada um, adicione:
+    - listener de "mouseover": mostra o .tooltip-box dentro desse item
+      (use querySelector DENTRO do item, não no document!)
+      e preenche o textContent com item.dataset.tooltip
+    - listener de "mouseout": esconde o .tooltip-box
+  - Use style.display para mostrar/esconder ('block' e 'none')
+
+  ATENÇÃO: o mouseover e mouseout também fazem bubbling!
+  Se o mouse entrar no .tooltip-box (filho do item), o mouseout dispara no item.
+  Isso pode fazer o tooltip piscar. Observe se isso acontece — não precisa corrigir agora,
+  só anote o que você percebe.</div>
+  <button onclick="configurarTooltips()">ativar tooltips</button>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>6. capturing — a fase que sobe antes de descer</h2>
+  <div class="caixa-externa" id="externa6">
+    externa (azul)
+    <div class="caixa-media" id="media6">
+      média (verde)
+      <div class="caixa-interna" id="interna6">interna (amarela) — clique aqui</div>
+    </div>
+  </div>
+  <div class="task">Capturing é a fase inversa do bubbling: o evento desce do topo até o alvo ANTES de subir.
+addEventListener tem um terceiro parâmetro: true = capturing, false (padrão) = bubbling.
+
+TODO: implemente ativarCapturing().
+  - Adicione listener de "click" em #externa6 com capture: TRUE
+    loga: "externa6 — CAPTURING"
+  - Adicione listener de "click" em #media6 com capture: TRUE
+    loga: "media6 — CAPTURING"
+  - Adicione listener de "click" em #interna6 sem terceiro parâmetro (bubbling normal)
+    loga: "interna6 — BUBBLING"
+
+  - Clique na interna e observe a ordem dos logs.
+  - Os listeners de capturing disparam antes ou depois do bubbling?</div>
+  <button onclick="ativarCapturing()">ativar listeners</button>
+  <button onclick="limparLog()">limpar log</button>
+</section>
+
+<script>
+  // redireciona console.log pra aparecer também na div#log
+  const logDiv = document.getElementById('log');
+  const origLog = console.log;
+  console.log = function(...args) {
+    origLog(...args);
+    logDiv.textContent += args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '\n';
+    logDiv.scrollTop = logDiv.scrollHeight;
+  };
+
+  function limparLog() {
+    logDiv.textContent = '';
+  }
+
+  // ── 1. bubbling ───────────────────────────────────────────────────────
+  function ativarBubbling() {
+  let handler = function(e){
+    console.log(e.currentTarget.id)
+  }
+  
+  interna1.addEventListener('click', handler)
+
+  media1.addEventListener('click', handler)
+
+  externa1.addEventListener('click', handler)
+}
+
+  // ── 2. target vs currentTarget ────────────────────────────────────────
+  function ativarComparacao() {
+    const handler = function(e) {
+      //console.log(e.target.id)
+      console.log(e.currentTarget.id)
+    }
+
+    let ids = document.querySelectorAll('[id$="2"]')
+    //talvez seja melhor pegar todos os elementos de id
+    
+    //loop 
+    for(let id of ids ) {
+      // em cada um deles aplicar
+      id.addEventListener('click', handler)
+    }
+  }
+
+  // ── 3. stopPropagation ────────────────────────────────────────────────
+  function ativarStopPropagation() {
+    let handler = function(e){
+      console.log(e.currentTarget.id)
+    }
+
+    let handlerStop = function(e){
+      console.log(e.currentTarget.id)
+      e.stopPropagation()
+      
+    }
+
+    externa3.addEventListener('click', handler)
+    media3.addEventListener('click', handlerStop)
+    interna3.addEventListener('click', handler)
+  }
+
+  // ── 4. card com botão excluir ─────────────────────────────────────────
+  function configurarCards() {
+    //pego todos os cards e crio um objeto ou seria array
+    let cards = document.querySelectorAll('.card')
+    
+    //para cada card
+    let handler = function(e){
+    //pega informação do id
+    let cardData = e.currentTarget.dataset.id
+    console.log(`Abrindo detalhes do evento ${cardData}`)
+    }
+
+   // de todos os cards selecionar um por vez 
+    for (let card of cards){
+      card.addEventListener('click', handler)
+    }
+
+     //pega o btn-excluir
+    let buttons = document.querySelectorAll('.btn-excluir')
+
+    //botão
+    let handlerExclude = function(e){
+      //let divbtn = document.querySelector('.btn-excluir').parentElement
+      let divbtnActual = e.target.parentElement
+      let cardPai = divbtnActual.dataset.id
+      e.stopPropagation()
+      divbtnActual.remove()
+
+      console.log(`Excluindo evento ${cardPai}`)
+      console.log(e.target)
+      console.log(e.currentTarget)
+    }
+
+    //unitário botão
+    for(let button of buttons){
+      button.addEventListener('click', handlerExclude)
+    }
+
+  }
+
+  // ── 5. tooltips ───────────────────────────────────────────────────────
+  function configurarTooltips() {
+    let items = document.querySelectorAll('.item-com-tooltip')
+  
+    let handler = function(e){
+      //pego cada data-tooltip(texto do tooltip)
+      let itemEach = e.currentTarget.dataset.tooltip
+
+      //coloco data-tooltip dentro da div de class tooltip-box
+      let tooltip = e.currentTarget.querySelector('div.tooltip-box')
+       tooltip.textContent = itemEach
+       tooltip.style.display = 'block'
+    }
+
+    let handlerExit = function(e){
+      let tooltip = e.currentTarget.querySelector('div.tooltip-box')
+      tooltip.style.display = 'none'
+    }
+
+    for(let item of items){
+      item.addEventListener('mouseover', handler)
+      item.addEventListener('mouseout', handlerExit)
+    }
+  }
+
+  // ── 6. capturing ─────────────────────────────────────────────────────
+  function ativarCapturing() {
+    
+    let handler = function(e){
+      console.log(`${e.currentTarget.id} + CAPTURING` )
+    }
+
+    let handlerB = function(e){
+      console.log(`${e.currentTarget.id} + BUBBLING`)
+    }
+    
+    //pegar cada elemento 
+    externa6.addEventListener( 'click', handler , {capture: true})
+
+    media6.addEventListener('click', handler, {capture:true})
+
+    interna6.addEventListener('click', handlerB, {capture:true})
+
+    //maneira de pegar todos os elementos div - continuar depois como refatoração
+    //for(let div of divs){
+      //div.addEventListener('click', {capture: true} )
+    //}
+
+  }
+</script>
+
+</body>
+</html>

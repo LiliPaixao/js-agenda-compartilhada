@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+
+</style>
+<html>
+    <body>
+        <ul id="ul">
+
+        </ul>
+
+        <script>
+            function getListContent(){
+                let result = [];
+
+                for (let i=1; i<=4; i++){
+                    //Cria um li vazio
+                    let li = document.createElement('li')
+                    // coloca i DENTRO do <li>, como conteúdo
+                    li.append(i)
+                    // coloca o <li> inteiro DENTRO do fragment
+                    result.push(li)
+                    
+                }
+                console.log(result)
+                return result
+
+            }
+            ul.append(...getListContent());
+            //colocando aqui deu errado, porque let fragment está no escopo da função
+            //console.log(fragment.children.length)
+        </script>
+    </body>
+</html>

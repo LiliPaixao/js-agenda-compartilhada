@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dia 27 — Estilos e Classes</title>
+<style>
+  body { font-family: sans-serif; max-width: 700px; margin: 40px auto; line-height: 1.5; padding: 0 16px; }
+  section { border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+  h2 { margin-top: 0; font-size: 16px; }
+  .task { background: #f5f5f5; padding: 10px; border-left: 3px solid #999; font-size: 14px; margin-bottom: 12px; white-space: pre-wrap; }
+  .caixa { width: 120px; height: 60px; background: lightblue; margin: 10px 0; display: flex; align-items: center; justify-content: center; }
+  button { margin-right: 6px; margin-bottom: 6px; }
+  #log { background: #111; color: #0f0; font-family: monospace; padding: 10px; height: 140px; overflow-y: auto; white-space: pre-wrap; font-size: 12px; }
+
+  /* classes de apoio pra você usar nos exercícios de classList */
+  .destaque { border: 3px solid orange; }
+  .escondido { display: none; }
+  .vermelho { background: tomato !important; color: white; }
+
+  /* ── estilos necessários pro exercício showNotification (seção 9) ── */
+  .notification {
+    position: fixed;
+    z-index: 1000;
+    padding: 10px 14px;
+    border: 1px solid #f88a00;
+    background: #fffae6;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  }
+  .notification.welcome {
+    border-color: #4ade80;
+    background: #eafff0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Dia 27 — style vs classList</h1>
+<p>Preencha cada função no &lt;script&gt; no final do arquivo. Use os botões pra testar. Tudo que você fizer com <code>console.log</code> aparece na caixinha preta abaixo também (redirecionei o console pra lá).</p>
+
+<div id="log"></div>
+
+<section>
+  <h2>1. className — string completa</h2>
+  <div class="caixa main page" id="caixa1">caixa1</div>
+  <div class="task">TODO: mostre no console o valor de className desse elemento.
+Depois, tente ATRIBUIR um novo valor a className (ex: "nova-classe") e veja o que acontece com as classes antigas.</div>
+  <button onclick="mostrarClassName()">mostrar className</button>
+  <button onclick="sobrescreverClassName()">sobrescrever className</button>
+</section>
+
+<section>
+  <h2>2. classList — add / remove / toggle / contains</h2>
+  <div class="caixa" id="caixa2">caixa2</div>
+  <div class="task">TODO: implemente as 4 funções abaixo usando classList.
+- adicionarDestaque(): adiciona a classe "destaque"
+- removerDestaque(): remove a classe "destaque"
+- alternarEscondido(): faz a caixa sumir/aparecer usando "escondido"
+- verificarDestaque(): loga true/false se a caixa tem a classe "destaque"</div>
+  <button onclick="adicionarDestaque()">add destaque</button>
+  <button onclick="removerDestaque()">remove destaque</button>
+  <button onclick="alternarEscondido()">toggle escondido</button>
+  <button onclick="verificarDestaque()">contains destaque?</button>
+</section>
+
+<section>
+  <h2>3. classList é iterável (for..of)</h2>
+  <div class="caixa main page destaque" id="caixa3">caixa3</div>
+  <div class="task">TODO: use for..of pra percorrer o classList de #caixa3 e logar cada classe individualmente.</div>
+  <button onclick="listarClasses()">listar classes</button>
+</section>
+
+<section>
+  <h2>4. style (camelCase)</h2>
+  <div class="caixa" id="caixa4">caixa4</div>
+  <div class="task">TODO: implemente pintarFundo() usando elem.style.backgroundColor (não use classList aqui, é só pra treinar a sintaxe).
+Lembre-se: background-color no CSS vira backgroundColor em JS.</div>
+  <button onclick="pintarFundo()">pintar de roxo via style</button>
+</section>
+
+<section>
+  <h2>5. Redefinindo style (voltar ao normal)</h2>
+  <div class="caixa" id="caixa5">caixa5</div>
+  <div class="task">TODO: 
+1. esconderCaixa5(): define style.display = "none"
+2. mostrarCaixa5DeVolta(): tem duas formas de reverter — teste as duas em momentos diferentes:
+   a) atribuir string vazia: style.display = ""
+   b) usar style.removeProperty('display')
+Qual a diferença entre as duas na prática? Anote sua conclusão num comentário.</div>
+  <button onclick="esconderCaixa5()">esconder (display:none)</button>
+  <button onclick="mostrarCaixa5DeVolta()">mostrar de volta</button>
+</section>
+
+<section>
+  <h2>6. cssText — reescrita completa</h2>
+  <div class="caixa main" id="caixa6">caixa6</div>
+  <div class="task">TODO: implemente reescreverEstiloCompleto() usando style.cssText para aplicar de uma vez: cor de texto branca, fundo vermelho, largura 200px e texto centralizado.
+Depois de rodar, verifique se a classe "main" ainda influencia visualmente algo (ela não deveria, cssText não mexe em classes, só no atributo style).</div>
+  <button onclick="reescreverEstiloCompleto()">aplicar cssText</button>
+</section>
+
+<section>
+  <h2>7. Atenção às unidades</h2>
+  <div class="caixa" id="caixa7">caixa7</div>
+  <div class="task">TODO: 
+1. tentarSemUnidade(): tente elem.style.marginTop = 30 (número puro, sem 'px') e depois logue elem.style.marginTop. O que aconteceu?
+2. comUnidade(): agora faça certo, com '30px', e logue de novo.</div>
+  <button onclick="tentarSemUnidade()">margin sem unidade</button>
+  <button onclick="comUnidade()">margin com unidade (30px)</button>
+</section>
+
+<section>
+  <h2>8. getComputedStyle — valores resolvidos</h2>
+  <div class="caixa vermelho" id="caixa8" style="padding: 12px;">caixa8</div>
+  <div class="task">TODO: implemente verEstiloComputado().
+Compare: elem.style.padding (deve vir vazio, pois foi definido inline mas via atributo HTML — teste!) vs getComputedStyle(elem).padding (deve vir o valor resolvido em px).
+Também logue getComputedStyle(elem).backgroundColor — repare que ele retorna em rgb(...), mesmo a classe "vermelho" usando !important com o nome "tomato".</div>
+  <button onclick="verEstiloComputado()">comparar style vs getComputedStyle</button>
+</section>
+
+<section>
+  <h2>9. showNotification(options) — juntando tudo</h2>
+  <div class="task">Objetivo: criar uma função showNotification(options) que:
+1. Cria um &lt;div class="notification"&gt; (a classe CSS de posicionamento/aparência já existe lá em cima, você não precisa criar ela)
+2. Coloca o conteúdo de options.html dentro do div (dica: innerHTML, não textContent — porque é HTML, não texto puro)
+3. Se options.className existir, adiciona essa classe extra no div (ex: "welcome")
+4. Posiciona o div na tela usando options.top e options.right — só que como PIXELS via JS (lembra da seção 7: números precisam de unidade!)
+   - Se options.top não vier, usar 0 como padrão
+   - Se options.right não vier, usar 0 como padrão
+5. Insere o div no body
+6. Depois de 1500ms, remove o div da tela sozinho
+
+Pense em qual propriedade de posicionamento CSS você já viu que funciona junto com "position: fixed" pra grudar um elemento a uma distância do topo e da direita da tela.</div>
+  <button onclick="testarBasico()">testar básico (canto sup. direito)</button>
+  <button onclick="testarComClasse()">testar com className "welcome"</button>
+  <button onclick="testarSemOpcoes()">testar sem top/right (deve ir pro 0,0)</button>
+</section>
+
+<script>
+  // redireciona console.log pra aparecer também na div#log, além do console real
+  const logDiv = document.getElementById('log');
+  const origLog = console.log;
+  console.log = function(...args) {
+    origLog(...args);
+    logDiv.textContent += args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '\n';
+    logDiv.scrollTop = logDiv.scrollHeight;
+  };
+
+  // ── 1. className ──────────────────────────────
+  function mostrarClassName() {
+    let caixa1 = document.querySelector('#caixa1')
+    console.log(caixa1.className)
+  }
+  function sobrescreverClassName() {
+    let caixa1 = document.querySelector('#caixa1')
+    caixa1.className = 'nova-classe'
+    console.log(caixa1.className)
+  }
+
+  // ── 2. classList ──────────────────────────────
+  function adicionarDestaque() {
+    let caixa2 = document.querySelector('#caixa2')
+    caixa2.classList.add("destaque")
+    console.log(caixa2.className)
+  }
+  function removerDestaque() {
+    let caixa2 = document.querySelector('#caixa2')
+    caixa2.classList.remove("destaque")
+    console.log(caixa2.className)
+  }
+  function alternarEscondido() {
+    let caixa2 = document.querySelector('#caixa2')
+    caixa2.classList.toggle("destaque")
+    console.log(caixa2.className)
+  }
+  function verificarDestaque() {
+    let caixa2 = document.querySelector('#caixa2')
+    console.log(caixa2.classList.contains("destaque"))
+  }
+
+  // ── 3. iterar classList ──────────────────────────────
+  function listarClasses() {
+    let caixa3 = document.querySelector('#caixa3')
+    for(let name of caixa3.classList){
+      console.log(name)
+    }
+  }
+
+  // ── 4. style camelCase ──────────────────────────────
+  function pintarFundo() {
+    let caixa4 = document.querySelector('#caixa4')
+    caixa4.style.backgroundColor = 'purple'
+  }
+
+  // ── 5. redefinir style ──────────────────────────────
+  function esconderCaixa5() {
+    let caixa5 = document.querySelector('#caixa5')
+    caixa5.style.display = "none"
+  }
+  function mostrarCaixa5DeVolta() {
+    let caixa5 = document.querySelector('#caixa5')
+    //caixa5.style.display = "" //cria novamente 
+    caixa5.style.removeProperty('display') //remove o que foi feito antes
+  }
+
+  // ── 6. cssText ──────────────────────────────
+  function reescreverEstiloCompleto() {
+    let caixa6 = document.querySelector('#caixa6')
+    caixa6.style.cssText = `
+      color: white;
+      background-color : red;
+      width: 200px;
+      text-align: center;
+
+    `
+  }
+
+  // ── 7. unidades ──────────────────────────────
+  function tentarSemUnidade() {
+    let caixa7 = document.querySelector('#caixa7')
+    //caixa7.style.marginTop = 30;
+    console.log(caixa7.style.marginTop)
+    caixa7.style.marginTop = 0;
+  }
+  function comUnidade() {
+    caixa7.style.marginTop = '30px';
+    console.log(caixa7.style.marginTop)
+  }
+
+  // ── 8. getComputedStyle ──────────────────────────────
+  function verEstiloComputado() {
+    let caixa8 = document.querySelector('#caixa8')
+    let caixa8Estilo = getComputedStyle(caixa8)
+
+    console.log(caixa8.style.padding)
+    console.log(caixa8Estilo)
+    console.log(caixa8Estilo.backgroundColor)
+
+  }
+
+  // ── 9. showNotification ──────────────────────────────
+  function showNotification(options) {
+    let div =  document.createElement('div')
+    div.className = "notification"
+    
+    //Como colocar o conteúdo aqui, pois o arquivo options.html não existe
+    div.innerHTML = options.html
+
+    //Em 3, se a className notifications existir coloque a welcome
+    if (options.className) {
+     div.classList.add(options.className)
+    }
+    //4.
+    div.style.top = (options.top || 0) + 'px'
+    
+    div.style.right =(options.right || 0) + 'px'
+
+    //5
+    document.body.append(div)
+
+    //6
+    setTimeout(() => div.remove(), 1500)
+  }
+
+  // botões de teste da seção 9 (não precisa mexer)
+  function testarBasico() {
+    showNotification({ top: 10, right: 10, html: "Olá!" });
+    console.log('Disparado: canto superior direito, some em 1.5s');
+  }
+
+  function testarComClasse() {
+    showNotification({ top: 60, right: 10, html: "Bem-vinda!", className: "welcome" });
+    console.log('Disparado: com classe welcome (fundo verde)');
+  }
+
+  function testarSemOpcoes() {
+    showNotification({ html: "Sem top/right definido" });
+    console.log('Disparado: deve aparecer colado no canto 0,0 (topo esquerdo)');
+  }
+</script>
+
+</body>
+</html>

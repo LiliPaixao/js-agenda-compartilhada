@@ -1,0 +1,58 @@
+{
+  "editor.quickSuggestions": {
+    "other": "off",
+    "comments": "off",
+    "strings": "off"
+  },
+  "github.copilot.editor.enableAutoCompletions": false,
+  "emmet.showExpandedAbbreviation": "never",
+  "emmet.showAbbreviationSuggestions": false,
+  "editor.inlineSuggest.suppressSuggestions": true,
+  "editor.suggest.showWords": false,
+  "editor.suggest.showSnippets": false,
+  "editor.hover.enabled": false,
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.inlineSuggest.enabled": false,
+  "editor.snippetSuggestions": "none",
+  "editor.tabCompletion": "off",
+  "editor.wordBasedSuggestions": "off",
+  "editor.parameterHints.enabled": false,
+  "editor.suggest.enabled": false,
+  "github.copilot.enable": { 
+    "*": false 
+  },
+  "html.suggest.html5": false,
+  "php.suggest.basic": false,
+  "javascript.suggest.enabled": false,
+  "typescript.suggest.enabled": false,
+  "[javascript]": {
+    "editor.quickSuggestions": {
+      "other": "off",
+      "comments": "off",
+      "strings": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.suggest.enabled": false
+  },
+  "[typescript]": {
+    "editor.quickSuggestions": {
+      "other": "off",
+      "comments": "off",
+      "strings": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.suggest.enabled": false
+  },
+  "[php]": {
+    "editor.quickSuggestions": {
+      "other": "off",
+      "comments": "off",
+      "strings": "off"
+    },
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.suggest.enabled": false
+  },
+
+
+}

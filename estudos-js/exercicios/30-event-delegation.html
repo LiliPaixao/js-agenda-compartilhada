@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dia 30 — Event Delegation</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 40px auto; background: #0e0e0f; color: #f0ede8; padding: 0 20px 60px; }
+    h1 { font-size: 20px; color: #f5c842; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; }
+    section { background: #161618; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+    h2 { font-size: 15px; color: #f5c842; margin-bottom: 12px; }
+    .task { font-size: 13px; color: #aaa; background: #1e1e21; border-left: 3px solid #a78bfa; padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; line-height: 1.6; }
+    .task strong { color: #f0ede8; display: block; margin-bottom: 4px; }
+    button { padding: 7px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: #f0ede8; cursor: pointer; font-size: 13px; margin-right: 8px; margin-top: 6px; transition: border-color .15s; }
+    button:hover { border-color: #f5c842; color: #f5c842; }
+
+    /* demo elements */
+    #lista-simples { list-style: none; padding: 0; margin: 12px 0; }
+    #lista-simples li { padding: 8px 14px; background: #1e1e21; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: background .15s; }
+    #lista-simples li:hover { background: #2a2a2e; }
+
+    #lista-eventos { list-style: none; padding: 0; margin: 12px 0; }
+    #lista-eventos li { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #1e1e21; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 6px; }
+    #lista-eventos li .acoes { display: flex; gap: 6px; }
+    #lista-eventos li button { margin: 0; font-size: 11px; padding: 4px 10px; }
+    #lista-eventos li button.btn-detalhe { border-color: #60a5fa; color: #60a5fa; }
+    #lista-eventos li button.btn-excluir { border-color: #f87171; color: #f87171; }
+
+    .menu { display: inline-flex; gap: 0; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; overflow: hidden; margin: 12px 0; }
+    .menu [data-action] { padding: 8px 18px; border: none; border-right: 1px solid rgba(255,255,255,0.1); background: #1e1e21; color: #aaa; cursor: pointer; font-size: 13px; transition: background .15s; }
+    .menu [data-action]:last-child { border-right: none; }
+    .menu [data-action]:hover { background: #2a2a2e; color: #f0ede8; }
+
+    /* exercícios javascript.info */
+    .msg-list { list-style: none; padding: 0; margin: 12px 0; }
+    .msg-list li { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #1e1e21; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; margin-bottom: 6px; font-size: 13px; }
+    .msg-list li .close-btn { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #aaa; cursor: pointer; font-size: 12px; padding: 0; display: flex; align-items: center; justify-content: center; margin: 0; }
+    .msg-list li .close-btn:hover { border-color: #f87171; color: #f87171; }
+
+    .tree { list-style: none; padding: 0; margin: 12px 0; }
+    .tree ul { list-style: none; padding-left: 20px; }
+    .tree li { padding: 3px 0; font-size: 13px; cursor: pointer; }
+    .tree li .node-title { display: inline-block; padding: 2px 8px; border-radius: 4px; }
+    .tree li .node-title:hover { background: rgba(255,255,255,0.07); }
+    .tree li ul { display: none; }
+    .tree li.open > ul { display: block; }
+
+    .sort-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .sort-table th { padding: 8px 14px; background: #1e1e21; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: left; user-select: none; }
+    .sort-table th:hover { background: #2a2a2e; color: #f5c842; }
+    .sort-table td { padding: 7px 14px; border: 1px solid rgba(255,255,255,0.07); }
+    .sort-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .sort-table th.sorted { color: #f5c842; }
+
+    .tooltip-demo { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+    .tooltip-demo button { margin: 0; }
+    .js-tooltip { position: fixed; background: #f5c842; color: #0e0e0f; padding: 5px 10px; border-radius: 5px; font-size: 12px; pointer-events: none; z-index: 100; }
+
+    #log { margin-top: 24px; background: #1e1e21; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 16px; font-family: monospace; font-size: 12px; color: #4ade80; min-height: 60px; max-height: 200px; overflow-y: auto; }
+    #log .entry { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 3px 0; }
+    #log .entry:last-child { border-bottom: none; }
+    #clear-log { font-size: 11px; color: #888; border-color: rgba(255,255,255,0.1); margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Dia 30 — Event Delegation</h1>
+<p class="subtitle">javascript.info/event-delegation</p>
+
+<!-- ───── SEÇÃO 1 ───── -->
+<section>
+  <h2>Exercício 1 — Um listener, vários itens</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarListaSimples()</code>.<br>
+    Adicione <strong>um único</strong> <code>addEventListener('click')</code> na <code>&lt;ul&gt;</code> (não nos <code>&lt;li&gt;</code>!).<br>
+    Quando qualquer item for clicado, exiba no log: <code>Clicou em: [texto do item]</code>.<br>
+    <br>
+    Dica: use <code>event.target</code> para saber em qual elemento o clique aconteceu. Como você garante que o clique foi num <code>&lt;li&gt;</code> e não na própria <code>&lt;ul&gt;</code>?
+  </div>
+  <ul id="lista-simples">
+    <li>Reunião com escola</li>
+    <li>Consulta médica</li>
+    <li>Aniversário da avó</li>
+    <li>Viagem de férias</li>
+  </ul>
+  <button onclick="ativarListaSimples()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 2 ───── -->
+<section>
+  <h2>Exercício 2 — Botões com data-id</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarListaEventos()</code>.<br>
+    A lista abaixo tem botões "Detalhe" e "Excluir" dentro de cada item.<br>
+    Adicione <strong>um único listener</strong> na <code>&lt;ul id="lista-eventos"&gt;</code>.<br>
+    Ao clicar em "Detalhe" → log: <code>Detalhes do evento [id]</code>.<br>
+    Ao clicar em "Excluir" → remove o <code>&lt;li&gt;</code> do DOM e loga: <code>Excluído evento [id]</code>.<br>
+    <br>
+    Dica: como você identifica qual botão foi clicado? Como sobe do botão até o <code>&lt;li&gt;</code> para pegar o <code>data-id</code>?
+  </div>
+  <ul id="lista-eventos">
+    <li data-id="1">
+      <span>Reunião com escola</span>
+      <div class="acoes">
+        <button class="btn-detalhe">Detalhe</button>
+        <button class="btn-excluir">Excluir</button>
+      </div>
+    </li>
+    <li data-id="2">
+      <span>Consulta médica</span>
+      <div class="acoes">
+        <button class="btn-detalhe">Detalhe</button>
+        <button class="btn-excluir">Excluir</button>
+      </div>
+    </li>
+    <li data-id="3">
+      <span>Aniversário da avó</span>
+      <div class="acoes">
+        <button class="btn-detalhe">Detalhe</button>
+        <button class="btn-excluir">Excluir</button>
+      </div>
+    </li>
+  </ul>
+  <button onclick="ativarListaEventos()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 3 ───── -->
+<section>
+  <h2>Exercício 3 — Menu com data-action</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarMenu()</code>.<br>
+    O menu abaixo usa <code>data-action</code> em vez de classes para identificar cada botão.<br>
+    Adicione <strong>um único listener</strong> no elemento <code>.menu</code>.<br>
+    Ao clicar em qualquer botão, leia o <code>data-action</code> do elemento clicado e logue:<br>
+    — <code>novo</code> → <code>Ação: novo evento</code><br>
+    — <code>importar</code> → <code>Ação: importar agenda</code><br>
+    — <code>exportar</code> → <code>Ação: exportar JSON</code><br>
+    <br>
+    Esse padrão é muito usado em interfaces reais: em vez de vários <code>if (btn.id === 'X')</code>, você lê o <code>data-action</code> e pode usar um objeto de mapeamento ou <code>switch</code>.
+  </div>
+  <div class="menu" id="menu-agenda">
+    <button data-action="novo">+ Novo</button>
+    <button data-action="importar">Importar</button>
+    <button data-action="exportar">Exportar JSON</button>
+  </div>
+  <button onclick="ativarMenu()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 4 ───── -->
+<section>
+  <h2>Exercício 4 — Adicionar itens dinamicamente</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarDinamico()</code> e <code>adicionarItem()</code>.<br>
+    <br>
+    Em <code>ativarDinamico()</code>: adicione <strong>um único listener</strong> na <code>#lista-dinamica</code>. Ao clicar em qualquer <code>&lt;li&gt;</code>, logue o texto do item.<br>
+    <br>
+    Em <code>adicionarItem()</code>: crie um novo <code>&lt;li&gt;</code> com o texto <code>"Item " + contador</code> (use uma variável <code>let contador</code> fora da função) e insira na lista.<br>
+    <br>
+    <strong>Teste:</strong> ative a delegation, adicione alguns itens e clique neles. O listener que você registrou no início captura os novos itens também — isso é o poder do event delegation!
+  </div>
+  <ul id="lista-dinamica" style="list-style:none;padding:0;margin:12px 0;min-height:40px;border:1px dashed rgba(255,255,255,0.1);border-radius:6px;padding:8px;"></ul>
+  <button onclick="ativarDinamico()">Ativar delegation</button>
+  <button onclick="adicionarItem()">+ Adicionar item</button>
+</section>
+
+<!-- ───── SEPARADOR ───── -->
+<h2 style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin:32px 0 16px;font-family:monospace;">
+  ── Exercícios do javascript.info ──────────────────────────
+</h2>
+
+<!-- ───── SEÇÃO 5 ───── -->
+<section>
+  <h2>Exercício 5 (js.info) — Ocultar mensagens com delegation</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarFecharMensagens()</code>.<br>
+    Cada item da lista abaixo tem um botão <code>[x]</code>. Ao clicar nele, o <code>&lt;li&gt;</code> correspondente deve ser removido do DOM.<br>
+    Regra: <strong>apenas um</strong> <code>addEventListener</code> no contêiner (<code>#lista-mensagens</code>) — sem listeners individuais em cada botão.<br>
+    <br>
+    Dica: como você sabe que o clique foi no <code>[x]</code> e não em outro lugar do item? Depois de confirmar, como sobe até o <code>&lt;li&gt;</code> para removê-lo?
+  </div>
+  <ul class="msg-list" id="lista-mensagens">
+    <li><span>Você tem uma reunião às 10h.</span><button class="close-btn">✕</button></li>
+    <li><span>Lembrete: buscar filho na escola às 17h.</span><button class="close-btn">✕</button></li>
+    <li><span>Consulta médica confirmada para amanhã.</span><button class="close-btn">✕</button></li>
+    <li><span>Novo evento compartilhado: Viagem de férias.</span><button class="close-btn">✕</button></li>
+  </ul>
+  <button onclick="ativarFecharMensagens()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 6 ───── -->
+<section>
+  <h2>Exercício 6 (js.info) — Menu em árvore</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarArvore()</code>.<br>
+    A árvore abaixo tem nós com filhos ocultos. Ao clicar no <strong>título</strong> de um nó (o texto, não o espaço vazio), seus filhos devem aparecer/desaparecer (toggle).<br>
+    Regras:
+    <ul style="margin:6px 0 0 16px;color:#aaa;">
+      <li>Apenas um listener — no elemento <code>#arvore</code></li>
+      <li>Clicar em espaço vazio (fora do título) não faz nada</li>
+    </ul>
+    <br>
+    Dica: cada título tem a classe <code>.node-title</code>. Use <code>closest</code> para subir até o <code>&lt;li&gt;</code> pai e toggle a classe <code>open</code> nele.
+  </div>
+  <ul class="tree" id="arvore">
+    <li>
+      <span class="node-title">📁 Agenda 2026</span>
+      <ul>
+        <li><span class="node-title">📁 Janeiro</span>
+          <ul>
+            <li><span class="node-title">📄 Reunião de início de ano</span></li>
+            <li><span class="node-title">📄 Consulta anual</span></li>
+          </ul>
+        </li>
+        <li><span class="node-title">📁 Fevereiro</span>
+          <ul>
+            <li><span class="node-title">📄 Carnaval</span></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <span class="node-title">📁 Contatos</span>
+      <ul>
+        <li><span class="node-title">📄 Pediatra</span></li>
+        <li><span class="node-title">📄 Escola</span></li>
+      </ul>
+    </li>
+  </ul>
+  <button onclick="ativarArvore()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 7 ───── -->
+<section>
+  <h2>Exercício 7 (js.info) — Tabela classificável</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarTabelaOrdenavel()</code>.<br>
+    Ao clicar em qualquer cabeçalho (<code>&lt;th&gt;</code>), a tabela deve ser ordenada pela coluna correspondente.<br>
+    Cada <code>&lt;th&gt;</code> tem um atributo <code>data-type</code>: <code>"number"</code> ou <code>"string"</code> — use isso para escolher o critério de comparação.<br>
+    Regra: <strong>um único listener</strong> no <code>&lt;thead&gt;</code>.<br>
+    <br>
+    Dica: após descobrir qual coluna foi clicada (índice do <code>th</code>), pegue todas as <code>&lt;tr&gt;</code> do <code>&lt;tbody&gt;</code>, converta para array, ordene pelo valor da célula naquela coluna, e reinserir as linhas na ordem nova.
+  </div>
+  <table class="sort-table" id="tabela-agenda">
+    <thead>
+      <tr>
+        <th data-type="string">Nome</th>
+        <th data-type="number">Idade</th>
+        <th data-type="string">Cidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Mariana</td><td>34</td><td>São Paulo</td></tr>
+      <tr><td>Carlos</td><td>28</td><td>Belo Horizonte</td></tr>
+      <tr><td>Ana</td><td>41</td><td>Rio de Janeiro</td></tr>
+      <tr><td>Bruno</td><td>19</td><td>Curitiba</td></tr>
+      <tr><td>Fernanda</td><td>55</td><td>Fortaleza</td></tr>
+      <tr><td>Lucas</td><td>23</td><td>Manaus</td></tr>
+    </tbody>
+  </table>
+  <button onclick="ativarTabelaOrdenavel()">Ativar delegation</button>
+</section>
+
+<!-- ───── SEÇÃO 8 ───── -->
+<section>
+  <h2>Exercício 8 (js.info) — Tooltip com delegation</h2>
+  <div class="task">
+    <strong>O que fazer:</strong>
+    Implemente <code>ativarTooltips()</code>.<br>
+    Qualquer elemento com <code>data-tooltip</code> deve exibir uma dica flutuante ao passar o mouse — e ocultar ao sair.<br>
+    Regra: <strong>apenas dois listeners</strong> no <code>document</code> (<code>mouseover</code> e <code>mouseout</code>) — sem listeners individuais em cada botão.<br>
+    <br>
+    Requisitos do tooltip:
+    <ul style="margin:6px 0 0 16px;color:#aaa;">
+      <li>Aparece centralizado <strong>acima</strong> do elemento</li>
+      <li>Distância de 5px entre o elemento e o tooltip</li>
+      <li>Se não couber acima (elemento perto do topo), aparece abaixo</li>
+      <li>Apenas um tooltip visível por vez</li>
+    </ul>
+    <br>
+    Dica: use <code>event.target.closest('[data-tooltip]')</code> para pegar o elemento anotado. Posicione o tooltip com <code>position: fixed</code> usando <code>getBoundingClientRect()</code> do elemento alvo.
+  </div>
+  <div class="tooltip-demo" id="area-tooltips">
+    <button data-tooltip="Cria um novo evento na agenda">+ Novo evento</button>
+    <button data-tooltip="Exporta todos os eventos como arquivo JSON">Exportar JSON</button>
+    <button data-tooltip="Sincroniza com o calendário compartilhado">Sincronizar</button>
+    <button data-tooltip="Abre as configurações da agenda">⚙ Configurações</button>
+  </div>
+  <button onclick="ativarTooltips()">Ativar delegation</button>
+</section>
+
+<!-- LOG -->
+<div id="log"><span style="color:#555">// saída do console aparece aqui</span></div>
+<button id="clear-log" onclick="document.getElementById('log').innerHTML='<span style=color:#555>// limpo</span>'">limpar log</button>
+
+<script>
+  // Redireciona console.log para o #log também
+  const logDiv = document.getElementById('log');
+  const originalLog = console.log;
+  console.log = function(...args) {
+    originalLog.apply(console, args);
+    const entry = document.createElement('div');
+    entry.className = 'entry';
+    entry.textContent = args.join(' ');
+    logDiv.appendChild(entry);
+    logDiv.scrollTop = logDiv.scrollHeight;
+  };
+
+  // ── Exercício 1 ──────────────────────────────────────────
+  function ativarListaSimples() {
+    //pego o ul by id
+    //let elem = document.getElementById("lista-simples")
+
+    //pego pelo selector id da ul
+    let elem = document.querySelector("#lista-simples")
+
+    elem.addEventListener('click', function(event) {
+      if (event.target.tagName == 'LI'){
+      console.log(event.target.textContent)
+      //console.log(event.target.tagName)
+      }
+    })
+  }
+
+  // ── Exercício 2 ──────────────────────────────────────────
+  function ativarListaEventos() {
+
+    //pego elemento pai ul
+    let elem = document.querySelector("#lista-eventos")
+
+    elem.addEventListener('click', function(event){
+      //elemento que foi clicado
+      
+      if(event.target.matches('.btn-detalhe')) {
+        console.log(event.target.textContent)
+      }
+      if(event.target.matches('.btn-excluir')) {
+        
+        let Li = event.target.closest('li')
+        Li.remove()
+        console.log(`Excluído evento ${Li.dataset.id}` )
+      }
+    })
+  }
+
+  // ── Exercício 3 ──────────────────────────────────────────
+  function ativarMenu() {
+    //se eu usasse a classe
+    let menu = document.querySelector('.menu')
+
+    class menuAgenda {
+      constructor(elem) {
+        this._elem = elem;
+        elem.onclick = this.onclick.bind(this)
+      }
+
+      novo(){
+        alert(`Ação: ${event.target.textContent}`)
+      }
+
+      importar(){
+        alert(`Ação: ${event.target.textContent}`)
+      }
+
+      exportar(){
+        alert(`Ação: ${event.target.textContent}`)
+      }
+
+      onclick(event){
+      let action = event.target.dataset.action;
+      if (action) {
+        this[action]()
+      }
+    }
+  }
+
+    new menuAgenda(menu);
+
+}
+
+  // ── Exercício 4 ──────────────────────────────────────────
+  let contador = 0;
+
+  function ativarDinamico() {
+   //ul
+   let elem = document.querySelector("#lista-dinamica")
+   elem.addEventListener('click', function(event){
+    //ao clicar em li, logue o texto do li
+    console.log(`${event.target.textContent}`)
+   })
+  }
+
+  function adicionarItem() {
+  contador++
+   let createLi = document.createElement('li')
+   //preciso colocar um texto dentro da li
+   createLi.textContent = `Item + ${contador}`
+   //colocar li dentro da ul
+   document.querySelector("#lista-dinamica").append(createLi)
+  }
+
+  // ── Exercício 5 (js.info) ────────────────────────────────
+  function ativarFecharMensagens() {
+    // TODO
+  }
+
+  // ── Exercício 6 (js.info) ────────────────────────────────
+  function ativarArvore() {
+    // TODO
+  }
+
+  // ── Exercício 7 (js.info) ────────────────────────────────
+  function ativarTabelaOrdenavel() {
+    // TODO
+  }
+
+  // ── Exercício 8 (js.info) ────────────────────────────────
+  function ativarTooltips() {
+    // TODO
+  }
+</script>
+</body>
+</html>
