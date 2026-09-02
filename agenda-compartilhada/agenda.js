@@ -105,6 +105,7 @@ function  searchByTitle(title){
     return eventsTitle
 }
 
+//devolve os eventos de uma data
 function searchByDate(date){
     let eventsDate
 
@@ -152,6 +153,7 @@ function criarMes(ano, mes){
         div.textContent = i
         date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
         div.dataset.date = date
+        searchByDate(date) //pega os eventos desse dia específico
         diasMes = [...diasMes, div]
     }
     return diasMes
@@ -183,5 +185,26 @@ calendario.append(...mesSetembro)
 calendario.append(...mesOutubro)
 calendario.append(...mesNovembro)
 calendario.append(...mesDezembro)
+
+
+//selecionar visualmente um dia
+let selectedDiv
+
+calendario.onclick = function(event) {
+    //onde ocorre o click
+    let target = event.target;
+    //barra cliques em divs vazias
+    if ( !target.dataset.date ) return
+    highlight(target)
+}
+
+//garante selção única
+function highlight(param) {
+    if (selectedDiv) {
+        selectedDiv.classList.remove('highlight')
+    }
+    selectedDiv = param;
+    selectedDiv.classList.add('highlight')
+}
 
 

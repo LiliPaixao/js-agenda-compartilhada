@@ -10,7 +10,7 @@
   "editor.inlineSuggest.suppressSuggestions": true,
   "editor.suggest.showWords": false,
   "editor.suggest.showSnippets": false,
-  "editor.hover.enabled": false,
+  "editor.hover.enabled": "off",
   "editor.suggestOnTriggerCharacters": false,
   "editor.acceptSuggestionOnEnter": "off",
   "editor.inlineSuggest.enabled": false,
