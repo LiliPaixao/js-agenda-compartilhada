@@ -8,11 +8,9 @@ if (events !== null ){
    events = JSON.parse(events)
 
     //pegar somente o id do array de objetos e retorá-lo com o map
-
     const idsExistentes = events.map(n => n.id )
 
     //pegar o maior valor do id com Math.max
-
     let idBiggest = Math.max(...idsExistentes)
 
     //o próximo id  deveria ser o maior id +1
@@ -20,9 +18,9 @@ if (events !== null ){
 
 } else {
     events = [
-    { id: gerarID(), title: 'Reunião de escola', event_date: '2026-07-01', created_at: Date.now()  , created_by: 'Liliane' },
-    { id: gerarID(), title: 'Apresentação do coral', event_date: '2026-07-05', created_at: Date.now()  , created_by: 'Liliane' },
-    { id: gerarID(), title: 'Psicóloga', event_date: '2026-07-10',created_at:Date.now()  , created_by: 'Liliane' },
+    { id: gerarID(), title: 'Reunião de escola', event_date: '2026-07-01', event_time: '15:00',created_at: Date.now()  , created_by: 'Liliane' },
+    { id: gerarID(), title: 'Apresentação do coral', event_date: '2026-07-05', event_time: '11:40', created_at: Date.now()  , created_by: 'Liliane' },
+    { id: gerarID(), title: 'Psicóloga', event_date: '2026-07-10',event_time: '8:00', created_at:Date.now()  , created_by: 'Liliane' },
 ]
 }
 
@@ -31,13 +29,13 @@ function gerarID() {
     return proximoID++
 }
 
-function createEvent(title, event_date, created_by) {
-    if (!title || !event_date) {
-        console.error('Título e data são obrigatórios')
+function createEvent(title, event_date, created_by, event_time) {
+    if (!title || !event_date || !event_time) {
+        console.error('Título, data e horário são obrigatórios')
         return
     }
     const id = gerarID()
-    const newEvent = { id, title, event_date, created_at: Date.now(), created_by}
+    const newEvent = { id, title, event_date, event_time, created_at: Date.now(), created_by}
     events = [...events, newEvent]
     saveEvent()
     return newEvent
@@ -61,7 +59,7 @@ function updateEvent( id, changes){
         return
     }
    
-    //o usuário modifica title, event_date
+    //o usuário modifica title, event_date, event_time
     //eventFounds: id, title, event_date, created_at, created_by
     //changes: o que eu quero mudar e quero sobrescrever
     let eventFoundUpdated = { ...eventFounds, ...changes, id:eventFounds.id, created_at:eventFounds.created_at, created_by:eventFounds.created_by}
@@ -93,7 +91,6 @@ function deleteEvent ( id ) {
 function saveEvent(){
     //salva
    localStorage.setItem('events',JSON.stringify(events))
-    
 }
 
 function  searchByTitle(title){
@@ -125,6 +122,15 @@ function importJSON(json){
    return events
 }
 
+function esc(string){
+    if(!string){
+        return
+    }
+    //replace texto em objeto
+    const escape = string.replaceAll('<' , '&lt;').replaceAll('>', '&gt;')
+    return escape
+}
+
 
 
 function criarMes(ano, mes){
@@ -149,11 +155,46 @@ function criarMes(ano, mes){
         let div = document.createElement('div')
 
         //isso me daria os dias de 1 a 31
-        //coloca o i dentro da div
+        //coloca o i dentro da div (i é o número = data)
         div.textContent = i
         date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
         div.dataset.date = date
-        searchByDate(date) //pega os eventos desse dia específico
+        //dates é array
+        const dates = searchByDate(date) //pega os eventos desse dia específico
+
+        dates.forEach( evento =>{
+            //crio div
+            let divEvento = document.createElement('div')
+           //crio p hora
+            let hourEvento = document.createElement('p')
+            //coloco conteúdo do p dentro do p
+            hourEvento.textContent = `${evento.event_time ? evento.event_time : ''}`
+            //coloco p dentro da div
+            divEvento.append(hourEvento)
+
+            //crio p título
+            let titleEvento = document.createElement('p')
+            titleEvento.textContent = `${evento.title ? evento.title : ''}`
+            divEvento.append(titleEvento)
+
+            //crio span ícone excluir
+            let excluirEvento = document.createElement('span')
+            excluirEvento.textContent = '❌'
+            divEvento.append(excluirEvento)
+            
+            //crio span ícone editar
+            let editarEvento = document.createElement('span')
+            editarEvento.textContent = '✏️'
+            divEvento.append(editarEvento)
+
+            //crio span ícone confirmar
+            let confirmarEvento = document.createElement('span')
+            confirmarEvento.textContent = '✅'
+            divEvento.append(confirmarEvento)
+
+            div.append(divEvento)
+        })
+        
         diasMes = [...diasMes, div]
     }
     return diasMes
