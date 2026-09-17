@@ -141,6 +141,7 @@ function criarMes(ano, mes){
     //0=dom, 1=seg,2=ter, 3=qua, 4=qui, 5=sex, 6=sab, 7=dom
     const diaSemanaInicio = new Date(ano, mes, 1).getDay()
 
+    //Inicia com array vazio
     let diasMes = []
     //dias vazios
     for (let diaVazio = 0; diaVazio < diaSemanaInicio; diaVazio++){
@@ -165,7 +166,7 @@ function criarMes(ano, mes){
         dates.forEach( evento =>{
             //crio div
             let divEvento = document.createElement('div')
-           //crio p hora
+            //crio p hora
             let hourEvento = document.createElement('p')
             //coloco conteúdo do p dentro do p
             hourEvento.textContent = `${evento.event_time ? evento.event_time : ''}`
@@ -182,10 +183,32 @@ function criarMes(ano, mes){
             excluirEvento.textContent = '❌'
             divEvento.append(excluirEvento)
             
+            excluirEvento.addEventListener('click', function(){
+                deleteEvent(evento.id)
+                divEvento.remove()
+            })
+
             //crio span ícone editar
             let editarEvento = document.createElement('span')
             editarEvento.textContent = '✏️'
             divEvento.append(editarEvento)
+
+            editarEvento.addEventListener('click', function(){
+               const modal = document.querySelector('#modal')
+               modal.style.display = 'flex';
+               //pega inputs
+               let inputTitulo = modal.querySelector('input[name="title"]')
+               let inputHora = modal.querySelector('input[name="event_time"]')
+               let inputData = modal.querySelector('input[name="event_date"]')
+
+               inputTitulo.value = `${evento.title ? evento.title : ''}`
+               inputHora.value = `${evento.event_time ? evento.event_time: ''}`
+               inputData.value = `${evento.event_date ? evento.event_date: ''}`
+
+               modal.dataset.id = evento.id
+
+
+            })
 
             //crio span ícone confirmar
             let confirmarEvento = document.createElement('span')
@@ -199,37 +222,57 @@ function criarMes(ano, mes){
     }
     return diasMes
 }
-const mesJaneiro = criarMes(2026,0)
-const mesFevereiro = criarMes(2026,1)
-const mesMarco = criarMes(2026,2)
-const mesAbril = criarMes(2026,3)
-const mesMaio = criarMes(2026,4)
-const mesJunho = criarMes(2026,5)
-const mesJulho = criarMes(2026,6)
-const mesAgosto = criarMes(2026,7)
-const mesSetembro = criarMes(2026,8)
-const mesOutubro = criarMes(2026,9)
-const mesNovembro = criarMes(2026,10)
-const mesDezembro = criarMes(2026,11)
+const mesesPortugues = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro"
+    ]
 const calendario = document.querySelector('#calendario')
-
-//posso pegar desse jeito o calendário
-calendario.append(...mesJaneiro)
-calendario.append(...mesFevereiro)
-calendario.append(...mesMarco)
-calendario.append(...mesAbril)
-calendario.append(...mesMaio)
-calendario.append(...mesJunho)
-calendario.append(...mesJulho)
-calendario.append(...mesAgosto)
-calendario.append(...mesSetembro)
-calendario.append(...mesOutubro)
-calendario.append(...mesNovembro)
-calendario.append(...mesDezembro)
+//janeiro começa 0
+ for (let cadaMes = 0; cadaMes <= 11; cadaMes++){
+    //mesCorrente recebe return de criarMes =diasMes = array de divs
+        let mesCorrente = criarMes(2026, cadaMes)
+        //Criar cabeçalho
+        let nomeMes = document.createElement('h2')
+        nomeMes.style.display = 'block'
+        nomeMes.textContent = `${mesesPortugues[cadaMes]}`
+        //Inserir nomes dos meses no calendario
+        calendario.append(nomeMes)
+        calendario.append(...mesCorrente)
+    }
 
 
 //selecionar visualmente um dia
 let selectedDiv
+
+//botão salvar fora de criar mes
+let btnSalvar = document.querySelector('#btn-salvar')
+    btnSalvar.addEventListener('click', function(){
+    let modal = document.querySelector('#modal')
+    
+
+    //Preciso criar id e changes
+    let id = Number(modal.dataset.id)
+    let changes = {
+        title: modal.querySelector('input[name="title"]').value,
+        event_time: modal.querySelector('input[name="event_time"]').value,
+        event_date: modal.querySelector('input[name="event_date"]').value
+    }
+    modal.style.display = 'none';
+
+    updateEvent(id,changes)
+    //depois melhorar essa solução para recarregar a pg
+    location.reload()
+})
 
 calendario.onclick = function(event) {
     //onde ocorre o click
