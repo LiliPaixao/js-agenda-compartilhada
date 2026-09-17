@@ -13,6 +13,8 @@
             margin: 20px auto;
         }
 
+       
+
         #calendario div {
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -22,15 +24,43 @@
             font-family: sans-serif;
         }
 
+        #calendario h2 {
+            grid-column: 1 / -1;
+        }
+
         #calendario div.highlight {
             background-color: #e0e0e0;
         }
         
+        #modal {
+            display: none;
+        }
     </style>
 
 </head>
 <body>
     <div id="calendario"></div>
+    <div id="modal">
+        <form>
+            <label> Título:
+                <input type="text"
+                name="title"
+                />
+            </label>
+            <label> Hora:
+                <input type="time"
+                name="event_time"
+                />
+            </label>
+            <label> Data
+                <input type='date'
+                name="event_date"
+                />
+            </label>
+            <button id="btn-salvar" type="button">Salvar
+            </button> 
+        </form>
+    </div>
 
     <script src="../agenda.js"></script>
 </body>
