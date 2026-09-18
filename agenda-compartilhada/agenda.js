@@ -242,11 +242,15 @@ const calendario = document.querySelector('#calendario')
     //mesCorrente recebe return de criarMes =diasMes = array de divs
         let mesCorrente = criarMes(2026, cadaMes)
         //Criar cabeçalho
+        let cabecalho = document.createElement('div')
+        cabecalho.classList.add('cabecalho')
         let nomeMes = document.createElement('h2')
-        nomeMes.style.display = 'block'
+        let button = document.createElement('button')
+        button.textContent = '+ Novo Evento'
         nomeMes.textContent = `${mesesPortugues[cadaMes]}`
-        //Inserir nomes dos meses no calendario
-        calendario.append(nomeMes)
+        cabecalho.append(nomeMes)
+        cabecalho.append(button)
+        calendario.append(cabecalho)
         calendario.append(...mesCorrente)
     }
 
