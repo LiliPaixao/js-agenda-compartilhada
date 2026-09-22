@@ -214,7 +214,6 @@ function criarMes(ano, mes){
             let confirmarEvento = document.createElement('span')
             confirmarEvento.textContent = '✅'
             divEvento.append(confirmarEvento)
-
             div.append(divEvento)
         })
         
@@ -252,6 +251,25 @@ const calendario = document.querySelector('#calendario')
         cabecalho.append(button)
         calendario.append(cabecalho)
         calendario.append(...mesCorrente)
+
+        //clique do botão para mostrar modal
+        button.addEventListener('click', function(){
+            const modal = document.querySelector('#modal')
+            modal.style.display = 'flex'
+
+            //pega inputs
+            let inputTitulo = modal.querySelector('input[name="title"]')
+            let inputHora = modal.querySelector('input[name="event_time"]')
+            let inputData = modal.querySelector('input[name="event_date"]')
+
+            //limpar inputs
+            inputTitulo.value = ''
+            inputHora.value = ''
+            inputData.value = ''
+
+            //limpar dataset.id
+            delete modal.dataset.id
+        })
     }
 
 
@@ -261,21 +279,25 @@ let selectedDiv
 //botão salvar fora de criar mes
 let btnSalvar = document.querySelector('#btn-salvar')
     btnSalvar.addEventListener('click', function(){
-    let modal = document.querySelector('#modal')
-    
+        let modal = document.querySelector('#modal')
+        let changes = {
+                    title: modal.querySelector('input[name="title"]').value,
+                    event_time: modal.querySelector('input[name="event_time"]').value,
+                    event_date: modal.querySelector('input[name="event_date"]').value
+                }
 
-    //Preciso criar id e changes
-    let id = Number(modal.dataset.id)
-    let changes = {
-        title: modal.querySelector('input[name="title"]').value,
-        event_time: modal.querySelector('input[name="event_time"]').value,
-        event_date: modal.querySelector('input[name="event_date"]').value
-    }
-    modal.style.display = 'none';
+            if(!modal.dataset.id){
+                createEvent(changes.title, changes.event_date, 'Liliane', changes.event_time)
+            } else {
+                //converto id string para numero
+                let id = Number(modal.dataset.id)
+                updateEvent(id,changes)
+            }
 
-    updateEvent(id,changes)
-    //depois melhorar essa solução para recarregar a pg
-    location.reload()
+                modal.style.display = 'none';
+
+            //depois melhorar essa solução para recarregar a pg
+            location.reload()
 })
 
 calendario.onclick = function(event) {
