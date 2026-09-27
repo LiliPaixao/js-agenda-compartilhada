@@ -29,13 +29,13 @@ function gerarID() {
     return proximoID++
 }
 
-function createEvent(title, event_date, created_by, event_time) {
-    if (!title || !event_date || !event_time) {
-        console.error('Título, data e horário são obrigatórios')
+function createEvent(title, event_date, created_by) {
+    if (!title || !event_date) {
+        console.error('Título, data são obrigatórios')
         return
     }
     const id = gerarID()
-    const newEvent = { id, title, event_date, event_time, created_at: Date.now(), created_by}
+    const newEvent = { id, title, event_date,created_at: Date.now(), created_by}
     events = [...events, newEvent]
     saveEvent()
     return newEvent
