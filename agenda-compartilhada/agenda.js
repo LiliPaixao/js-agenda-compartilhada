@@ -52,7 +52,7 @@ function updateEvent( id, changes){
         console.error('Id não existente')
         return
     }
-    
+    // id inválido
     const eventFounds = events.find( n => n.id === id)
     if (!eventFounds) {
         console.error('Informe um id válido')
@@ -110,6 +110,24 @@ function searchByDate(date){
     return eventsDate
 }
 
+//verifica a porcentagem feita e colore o dia
+function porcentagemConfirmados(eventsDate, diaDiv){
+    //quantidade total
+    let eventsTotal = eventsDate.length
+    //qtde done
+    let qtdEvents = eventsDate.filter(n => n.status == 'confirmado').length
+    let porcentagem = qtdEvents/eventsTotal
+    const colors = ['green', 'yellow', 'red']
+    diaDiv.classList.remove(...colors)
+    if (porcentagem >= 0.8){
+        diaDiv.classList.add('green')
+    } else if (porcentagem >= 0.5){
+        diaDiv.classList.add('yellow')
+    } else {
+        diaDiv.classList.add('red')
+    }
+}
+
 //Exportar dados da agenda como JSON
 function exportJSON(){
     return JSON.stringify(events)
@@ -161,7 +179,8 @@ function criarMes(ano, mes){
         date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
         div.dataset.date = date
         //dates é array
-        const dates = searchByDate(date) //pega os eventos desse dia específico
+        const dates = searchByDate(date) 
+        porcentagemConfirmados(dates, div)//pega os eventos desse dia específico
 
         dates.forEach( evento =>{
             //crio div
@@ -170,12 +189,14 @@ function criarMes(ano, mes){
             let hourEvento = document.createElement('p')
             //coloco conteúdo do p dentro do p
             hourEvento.textContent = `${evento.event_time ? evento.event_time : ''}`
+            hourEvento.classList.toggle('done', evento.status == "confirmado")
             //coloco p dentro da div
             divEvento.append(hourEvento)
 
             //crio p título
             let titleEvento = document.createElement('p')
             titleEvento.textContent = `${evento.title ? evento.title : ''}`
+            titleEvento.classList.toggle('done', evento.status == "confirmado")
             divEvento.append(titleEvento)
 
             //crio span ícone excluir
@@ -206,8 +227,6 @@ function criarMes(ano, mes){
                inputData.value = `${evento.event_date ? evento.event_date: ''}`
 
                modal.dataset.id = evento.id
-
-
             })
 
             //crio span ícone confirmar
@@ -215,12 +234,27 @@ function criarMes(ano, mes){
             confirmarEvento.textContent = '✅'
             divEvento.append(confirmarEvento)
             div.append(divEvento)
+
+            confirmarEvento.addEventListener('click', function(){
+              let novoStatus = evento.status == 'confirmado' ? 'pendente' : 'confirmado'
+              //salva o estado no localstorage
+              let eventAtualizado = updateEvent(evento.id, {status: novoStatus})
+              //achar o id que foi clicado
+              eventAtualizado = events.find(n => n.id === evento.id)
+              evento = eventAtualizado
+              console.log(evento)
+
+              hourEvento.classList.toggle('done')
+              titleEvento.classList.toggle('done')
+              porcentagemConfirmados(dates, div)
+            })
         })
         
         diasMes = [...diasMes, div]
     }
     return diasMes
 }
+
 const mesesPortugues = [
     "Janeiro",
     "Fevereiro",
