@@ -119,6 +119,10 @@ function porcentagemConfirmados(eventsDate, diaDiv){
     let porcentagem = qtdEvents/eventsTotal
     const colors = ['green', 'yellow', 'red']
     diaDiv.classList.remove(...colors)
+    if (eventsTotal === 0){
+        diaDiv.classList.add('red')
+        return
+    }
     if (porcentagem >= 0.8){
         diaDiv.classList.add('green')
     } else if (porcentagem >= 0.5){
