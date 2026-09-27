@@ -1,0 +1,814 @@
+        /* ===========================================================
+           Sistema de temas — todo valor de cor/fundo/tipografia é uma
+           variável. Trocar [data-theme] na <html> troca a aparência
+           inteira sem tocar em nenhuma regra abaixo.
+           =========================================================== */
+
+        /* ---------- tema "planner" — usado como padrão em :root ---------- */
+        :root,
+        :root[data-theme="planner"] {
+            --bg-base: #FBF6EE;
+            --bg-decor:
+                radial-gradient(ellipse 60% 45% at 12% 0%,   rgba(233, 205, 193, 0.55), transparent 70%),
+                radial-gradient(ellipse 55% 40% at 88% 12%,  rgba(220, 229, 215, 0.60), transparent 70%),
+                radial-gradient(ellipse 70% 50% at 50% 100%, rgba(240, 227, 202, 0.55), transparent 70%);
+
+            --panel-bg:        rgba(255, 253, 249, 0.58);
+            --panel-bg-strong: rgba(255, 253, 249, 0.78);
+            --panel-border:    rgba(255, 255, 255, 0.72);
+            --panel-pad:    2rem 2rem 2.5rem;
+            --panel-radius: 22px;
+
+            --month-gap-top: 2.75rem;
+            --grid-gap:      12px;
+            --cell-min-h:    96px;
+            --cell-radius:   14px;
+            --cell-border:       rgba(255, 255, 255, 0.65);
+            --cell-border-hover: rgba(203, 169, 116, 0.5);
+
+            --text:       #4C4239;
+            --text-soft:  #8C7E70;
+            --text-faint: #B3A695;
+            --divider:    rgba(139, 126, 112, 0.18);
+
+            --accent:      #C2806A;
+            --accent-soft: #E9CDC1;
+            --accent-2:      #93A88F;
+            --accent-2-soft: #DCE5D7;
+            --accent-3:      #CBA974;
+            --accent-3-soft: #F0E3CA;
+
+            --focus-ring:             var(--accent-3);
+            --focus-ring-shadow:      rgba(203, 169, 116, 0.28);
+            --focus-ring-shadow-soft: rgba(203, 169, 116, 0.22);
+
+            /* progresso do dia — verde/amarelo/vermelho pastel clássicos */
+            --prog-done:          #DEEADA;
+            --prog-done-border:   #A9C0A3;
+            --prog-partial:        #F8EDD5;
+            --prog-partial-border: #DFC48E;
+            --prog-pending:        #F8E4DD;
+            --prog-pending-border: #E0B0A0;
+
+            --card-bg:       rgba(255, 255, 255, 0.72);
+            --card-bg-hover: rgba(255, 255, 255, 0.92);
+            --card-accent-w: 3px;
+
+            --icon-hover-bg: rgba(203, 169, 116, 0.16);
+            --control-hover-bg: rgba(203, 169, 116, 0.14);
+
+            --btn-secondary-text:   #7A4B39;
+            --btn-secondary-border: rgba(194, 128, 106, 0.35);
+            --btn-secondary-bg:       linear-gradient(180deg, rgba(255,255,255,0.7), #E9CDC1);
+            --btn-secondary-bg-hover: linear-gradient(180deg, rgba(255,255,255,0.85), #F0D8CD);
+            --btn-secondary-shadow-hover: rgba(194, 128, 106, 0.22);
+
+            --btn-primary-text:   #FFFDF9;
+            --btn-primary-border: rgba(154, 96, 76, 0.5);
+            --btn-primary-bg:          linear-gradient(180deg, #CE8B73, #C2806A);
+            --btn-primary-shadow:       rgba(194, 128, 106, 0.28);
+            --btn-primary-shadow-hover: rgba(194, 128, 106, 0.34);
+
+            --overlay:     rgba(76, 66, 57, 0.34);
+            --modal-bg:     linear-gradient(170deg, rgba(255, 253, 250, 0.94), rgba(243, 233, 219, 0.9));
+            --modal-border: rgba(255, 255, 255, 0.8);
+            --modal-w: 370px;
+
+            --input-bg:          rgba(255, 255, 255, 0.78);
+            --input-bg-focus:    #FFFDF9;
+            --input-border:       rgba(139, 126, 112, 0.28);
+            --input-border-hover: rgba(139, 126, 112, 0.45);
+
+            --shadow-sm:       0 2px 8px rgba(94, 74, 58, 0.06);
+            --shadow-sm-hover: 0 3px 10px rgba(94, 74, 58, 0.11);
+            --shadow-md:       0 10px 28px rgba(94, 74, 58, 0.10);
+            --shadow-md-hover: 0 8px 20px rgba(94, 74, 58, 0.12);
+            --shadow-lg:       0 24px 60px rgba(94, 74, 58, 0.22);
+
+            --radius-sm:   10px;
+            --radius-pill: 999px;
+            --border-w: 1px;
+
+            --font-display: "Fraunces", "Georgia", "Times New Roman", serif;
+            --font-body:    "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+            --fw-display: 500;
+            --fs-h1: clamp(1.7rem, 4vw, 2.3rem);
+            --fs-h2: 1.45rem;
+            --fs-body: 15px;
+            --tracking-eyebrow: 0.14em;
+
+            --blur-panel:   16px;
+            --blur-cell:    8px;
+            --blur-overlay: 7px;
+            --blur-modal:   20px;
+
+            --tape-1: rgba(194, 128, 106, 0.55);
+            --tape-2: rgba(147, 168, 143, 0.55);
+        }
+
+        /* ---------- tema "boho" — terroso, aconchegante, artesanal ---------- */
+        :root[data-theme="boho"] {
+            --bg-base: #241A14;
+            --bg-decor:
+                radial-gradient(ellipse 70% 50% at 15% -5%,  rgba(178, 105, 53, 0.25), transparent 70%),
+                radial-gradient(ellipse 60% 45% at 90% 10%,  rgba(122, 90, 46, 0.22), transparent 70%),
+                radial-gradient(ellipse 80% 55% at 50% 105%, rgba(94, 58, 36, 0.30), transparent 70%),
+                repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.015) 0 2px, transparent 2px 6px);
+
+            --panel-bg:        rgba(58, 42, 32, 0.62);
+            --panel-bg-strong: rgba(66, 48, 36, 0.74);
+            --panel-border:    rgba(214, 168, 112, 0.22);
+            --panel-pad:    2.1rem 2.1rem 2.6rem;
+            --panel-radius: 18px;
+
+            --month-gap-top: 2.9rem;
+            --grid-gap:      13px;
+            --cell-min-h:    98px;
+            --cell-radius:   12px;
+            --cell-border:       rgba(214, 168, 112, 0.22);
+            --cell-border-hover: rgba(209, 163, 46, 0.5);
+
+            --text:       #F1E4D3;
+            --text-soft:  #CBB59A;
+            --text-faint: #9C8770;
+            --divider:    rgba(214, 168, 112, 0.2);
+
+            --accent:      #C97B3D;
+            --accent-soft: rgba(201, 123, 61, 0.28);
+            --accent-2:      #7C8A4E;
+            --accent-2-soft: rgba(124, 138, 78, 0.28);
+            --accent-3:      #D1A32E;
+            --accent-3-soft: rgba(209, 163, 46, 0.28);
+
+            --focus-ring:             var(--accent-3);
+            --focus-ring-shadow:      rgba(209, 163, 46, 0.35);
+            --focus-ring-shadow-soft: rgba(209, 163, 46, 0.24);
+
+            /* progresso do dia — sálvia clara (confirmado) > mostarda (parcial) > tijolo escuro (pendente) */
+            --prog-done:          #A9B379;
+            --prog-done-border:   #7C8A4E;
+            --prog-partial:        #D1A32E;
+            --prog-partial-border: #A97F1F;
+            --prog-pending:        #6B3B2C;
+            --prog-pending-border: #4A281D;
+
+            /* sobreposição escura (não clara): dias confirmados/parciais têm fundo
+               claro (sálvia/mostarda), e o texto creme claro do tema só fica legível
+               se o cartão escurecer esse fundo, em vez de clareá-lo ainda mais */
+            --card-bg:       rgba(36, 26, 20, 0.55);
+            --card-bg-hover: rgba(36, 26, 20, 0.7);
+            --card-accent-w: 4px;
+
+            --icon-hover-bg: rgba(209, 163, 46, 0.22);
+            --control-hover-bg: rgba(209, 163, 46, 0.18);
+
+            --btn-secondary-text:   #F1E4D3;
+            --btn-secondary-border: rgba(214, 168, 112, 0.4);
+            --btn-secondary-bg:       linear-gradient(180deg, rgba(255,244,230,0.10), rgba(201,123,61,0.35));
+            --btn-secondary-bg-hover: linear-gradient(180deg, rgba(255,244,230,0.16), rgba(201,123,61,0.5));
+            --btn-secondary-shadow-hover: rgba(201, 123, 61, 0.3);
+
+            --btn-primary-text:   #2B1A10;
+            --btn-primary-border: rgba(209, 163, 46, 0.5);
+            --btn-primary-bg:          linear-gradient(180deg, #E0A94A, #C97B3D);
+            --btn-primary-shadow:       rgba(201, 123, 61, 0.35);
+            --btn-primary-shadow-hover: rgba(201, 123, 61, 0.45);
+
+            --overlay:     rgba(15, 10, 7, 0.62);
+            --modal-bg:     linear-gradient(170deg, rgba(58, 42, 32, 0.95), rgba(42, 30, 22, 0.94));
+            --modal-border: rgba(214, 168, 112, 0.3);
+            --modal-w: 380px;
+
+            --input-bg:          rgba(255, 244, 230, 0.07);
+            --input-bg-focus:    rgba(255, 244, 230, 0.13);
+            --input-border:       rgba(214, 168, 112, 0.32);
+            --input-border-hover: rgba(214, 168, 112, 0.5);
+
+            --shadow-sm:       0 2px 10px rgba(0, 0, 0, 0.35);
+            --shadow-sm-hover: 0 4px 14px rgba(0, 0, 0, 0.4);
+            --shadow-md:       0 14px 34px rgba(0, 0, 0, 0.45);
+            --shadow-md-hover: 0 10px 26px rgba(0, 0, 0, 0.4);
+            --shadow-lg:       0 28px 70px rgba(0, 0, 0, 0.55);
+
+            --radius-sm:   9px;
+            --radius-pill: 14px;
+            --border-w: 2px;
+
+            --font-display: "Fraunces", "Georgia", serif;
+            --font-body:    "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+            --fw-display: 600;
+            --fs-h1: clamp(1.9rem, 4.5vw, 2.6rem);
+            --fs-h2: 1.55rem;
+            --fs-body: 15px;
+            --tracking-eyebrow: 0.1em;
+
+            --blur-panel:   18px;
+            --blur-cell:    6px;
+            --blur-overlay: 8px;
+            --blur-modal:   22px;
+        }
+
+        /* ---------- tema "editorial" — escuro, um único acento, espaçoso ---------- */
+        :root[data-theme="editorial"] {
+            --bg-base: #0F0F0F;
+            --bg-decor:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255, 255, 255, 0.05), transparent 60%);
+
+            --panel-bg:        rgba(255, 255, 255, 0.03);
+            --panel-bg-strong: rgba(255, 255, 255, 0.045);
+            --panel-border:    rgba(255, 255, 255, 0.08);
+            --panel-pad:    2.5rem 2.75rem 3rem;
+            --panel-radius: 20px;
+
+            --month-gap-top: 4.5rem;
+            --grid-gap:      16px;
+            --cell-min-h:    108px;
+            --cell-radius:   10px;
+            --cell-border:       rgba(255, 255, 255, 0.08);
+            --cell-border-hover: rgba(255, 107, 77, 0.4);
+
+            --text:       #F4F4F4;
+            --text-soft:  #A0A0A0;
+            --text-faint: #6B6B6B;
+            --divider:    rgba(255, 255, 255, 0.08);
+
+            --accent:      #FF6B4D;
+            --accent-soft: rgba(255, 107, 77, 0.16);
+            --accent-2:      var(--accent);
+            --accent-2-soft: var(--accent-soft);
+            --accent-3:      var(--accent);
+            --accent-3-soft: rgba(255, 107, 77, 0.24);
+
+            --focus-ring:             var(--accent);
+            --focus-ring-shadow:      rgba(255, 107, 77, 0.35);
+            --focus-ring-shadow-soft: rgba(255, 107, 77, 0.22);
+
+            /* progresso do dia — um único acento variando em presença:
+               pendente quase invisível, confirmado com contorno vívido cheio */
+            --prog-done:          rgba(255, 107, 77, 0.20);
+            --prog-done-border:   rgba(255, 107, 77, 0.85);
+            --prog-partial:        rgba(255, 107, 77, 0.10);
+            --prog-partial-border: rgba(255, 107, 77, 0.45);
+            --prog-pending:        rgba(255, 255, 255, 0.025);
+            --prog-pending-border: rgba(255, 255, 255, 0.12);
+
+            --card-bg:       rgba(255, 255, 255, 0.04);
+            --card-bg-hover: rgba(255, 255, 255, 0.075);
+            --card-accent-w: 2px;
+
+            --icon-hover-bg: rgba(255, 107, 77, 0.14);
+            --control-hover-bg: rgba(255, 107, 77, 0.12);
+
+            --btn-secondary-text:   #F4F4F4;
+            --btn-secondary-border: rgba(255, 255, 255, 0.14);
+            --btn-secondary-bg:       rgba(255, 255, 255, 0.05);
+            --btn-secondary-bg-hover: rgba(255, 255, 255, 0.09);
+            --btn-secondary-shadow-hover: rgba(0, 0, 0, 0.5);
+
+            --btn-primary-text:   #0F0F0F;
+            --btn-primary-border: rgba(255, 107, 77, 0.6);
+            --btn-primary-bg:          linear-gradient(180deg, #FF8368, #FF6B4D);
+            --btn-primary-shadow:       rgba(255, 107, 77, 0.35);
+            --btn-primary-shadow-hover: rgba(255, 107, 77, 0.5);
+
+            --overlay:     rgba(0, 0, 0, 0.72);
+            --modal-bg:     linear-gradient(170deg, rgba(24, 24, 24, 0.96), rgba(15, 15, 15, 0.98));
+            --modal-border: rgba(255, 255, 255, 0.1);
+            --modal-w: 400px;
+
+            --input-bg:          rgba(255, 255, 255, 0.04);
+            --input-bg-focus:    rgba(255, 255, 255, 0.07);
+            --input-border:       rgba(255, 255, 255, 0.14);
+            --input-border-hover: rgba(255, 255, 255, 0.22);
+
+            --shadow-sm:       0 2px 10px rgba(0, 0, 0, 0.5);
+            --shadow-sm-hover: 0 4px 16px rgba(0, 0, 0, 0.55);
+            --shadow-md:       0 16px 40px rgba(0, 0, 0, 0.6);
+            --shadow-md-hover: 0 12px 30px rgba(0, 0, 0, 0.55);
+            --shadow-lg:       0 32px 80px rgba(0, 0, 0, 0.7);
+
+            --radius-sm:   8px;
+            --radius-pill: 999px;
+            --border-w: 1px;
+
+            --font-display: "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+            --font-body:    "Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+            --fw-display: 800;
+            --fs-h1: clamp(2.2rem, 5vw, 3.2rem);
+            --fs-h2: 1.7rem;
+            --fs-body: 16px;
+            --tracking-eyebrow: 0.22em;
+
+            --blur-panel:   24px;
+            --blur-cell:    10px;
+            --blur-overlay: 10px;
+            --blur-modal:   26px;
+        }
+
+        /* ===========================================================
+           Estilos gerais — só leem variáveis, nunca cor fixa
+           =========================================================== */
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 2.5rem 1rem 1rem;
+            font-family: var(--font-body);
+            font-size: var(--fs-body);
+            color: var(--text);
+            background-color: var(--bg-base);
+            background-image: var(--bg-decor);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* ---------- folha / painel principal (vidro) ---------- */
+        .planner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--panel-pad);
+            background: var(--panel-bg);
+            backdrop-filter: blur(var(--blur-panel)) saturate(120%);
+            -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(120%);
+            border: var(--border-w) solid var(--panel-border);
+            border-radius: var(--panel-radius);
+            box-shadow: var(--shadow-md);
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .planner__titulo {
+            margin: 0;
+            font-family: var(--font-display);
+            font-weight: var(--fw-display);
+            font-size: var(--fs-h1);
+            letter-spacing: 0.01em;
+            color: var(--text);
+        }
+
+        .planner__subtitulo {
+            margin: 0.35rem 0 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: var(--tracking-eyebrow);
+            text-transform: uppercase;
+            color: var(--text-faint);
+        }
+
+        .planner__regua {
+            margin: 1.5rem 0 0;
+            border: 0;
+            border-top: 1px solid var(--divider);
+        }
+
+        /* ===========================================================
+           Seletor de tema — controla apenas data-theme via tema.js
+           =========================================================== */
+        .tema-switch {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 200;
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            background: var(--panel-bg-strong);
+            backdrop-filter: blur(var(--blur-panel));
+            -webkit-backdrop-filter: blur(var(--blur-panel));
+            border: var(--border-w) solid var(--panel-border);
+            border-radius: var(--radius-pill);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tema-switch button {
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--text-soft);
+            padding: 0.45rem 0.85rem;
+            border: 1px solid transparent;
+            border-radius: var(--radius-pill);
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+
+        .tema-switch button:hover {
+            background: var(--control-hover-bg);
+            color: var(--text);
+        }
+
+        .tema-switch button:active { transform: scale(0.96); }
+
+        .tema-switch button:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .tema-switch button.is-active {
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            border-color: var(--btn-primary-border);
+            box-shadow: 0 3px 10px var(--btn-primary-shadow);
+        }
+
+        @media (max-width: 560px) {
+            .tema-switch {
+                position: static;
+                margin: 0 auto 1.25rem;
+                width: fit-content;
+            }
+        }
+
+        /* ===========================================================
+           Calendário — grade dos meses
+           #calendario > div.cabecalho  → cabeçalho do mês
+           #calendario > div[data-date] → dia do mês
+           #calendario > div (sem data) → preenchimento antes do dia 1
+           =========================================================== */
+        #calendario {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--grid-gap);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* --- cabeçalho do mês --- */
+        #calendario .cabecalho {
+            position: relative;
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: var(--month-gap-top) 0 0.5rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        #calendario .cabecalho:first-child { margin-top: 0.5rem; }
+
+        #calendario .cabecalho h2 {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            font-family: var(--font-display);
+            font-weight: var(--fw-display);
+            font-size: var(--fs-h2);
+            letter-spacing: 0.015em;
+            color: var(--text);
+        }
+
+        /* washi tape só no tema "planner" — puramente decorativo, não mexe no HTML */
+        :root[data-theme="planner"] #calendario .cabecalho::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: -6px;
+            width: 72px;
+            height: 20px;
+            background:
+                repeating-linear-gradient(115deg, var(--tape-1) 0 8px, var(--tape-2) 8px 16px);
+            opacity: 0.6;
+            transform: rotate(-3deg);
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            z-index: 0;
+        }
+
+        #calendario .cabecalho button {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--btn-secondary-text);
+            padding: 0.5rem 1.05rem;
+            border: 1px solid var(--btn-secondary-border);
+            border-radius: var(--radius-pill);
+            background: var(--btn-secondary-bg);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        #calendario .cabecalho button:hover {
+            background: var(--btn-secondary-bg-hover);
+            box-shadow: 0 4px 14px var(--btn-secondary-shadow-hover);
+            transform: translateY(-1px);
+        }
+
+        #calendario .cabecalho button:active { transform: translateY(0); }
+
+        #calendario .cabecalho button:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        /* --- célula de dia --- */
+        #calendario > div:not(.cabecalho) {
+            min-height: var(--cell-min-h);
+            min-width: 0;
+            padding: 8px 9px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: var(--fw-display);
+            line-height: 1.15;
+            color: var(--text-soft);
+        }
+
+        #calendario > div[data-date] {
+            border: var(--border-w) solid var(--cell-border);
+            border-radius: var(--cell-radius);
+            background: var(--panel-bg-strong);
+            backdrop-filter: blur(var(--blur-cell));
+            -webkit-backdrop-filter: blur(var(--blur-cell));
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        #calendario > div[data-date]:hover {
+            transform: translateY(-2px);
+            border-color: var(--cell-border-hover);
+            box-shadow: var(--shadow-md-hover);
+        }
+
+        /* dias vazios de preenchimento: sem papel, só espaço */
+        #calendario > div:not([data-date]):not(.cabecalho) {
+            border: 0;
+            background: none;
+            box-shadow: none;
+        }
+
+        /* --- progresso do dia --- */
+        #calendario > div[data-date].green {
+            background: var(--prog-done);
+            border-color: var(--prog-done-border);
+        }
+
+        #calendario > div[data-date].yellow {
+            background: var(--prog-partial);
+            border-color: var(--prog-partial-border);
+        }
+
+        #calendario > div[data-date].red {
+            background: var(--prog-pending);
+            border-color: var(--prog-pending-border);
+        }
+
+        /* --- dia selecionado --- */
+        #calendario div.highlight {
+            box-shadow: 0 0 0 2px var(--focus-ring), 0 10px 24px var(--focus-ring-shadow);
+            transform: translateY(-2px);
+        }
+
+        /* ===========================================================
+           Cartão de evento dentro do dia
+           #calendario > div[data-date] > div  → cartão
+             > p:1 hora · p:2 título · span ❌ ✏️ ✅
+           =========================================================== */
+        #calendario > div[data-date] > div {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1px 3px;
+            margin-top: 7px;
+            padding: 6px 7px;
+            font-family: var(--font-body);
+            border-radius: var(--radius-sm);
+            border-left: var(--card-accent-w) solid var(--accent-2);
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            transition: background 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        #calendario > div[data-date] > div:hover {
+            background: var(--card-bg-hover);
+            box-shadow: var(--shadow-sm-hover);
+        }
+
+        #calendario > div[data-date] > div > p {
+            flex: 1 1 100%;
+            margin: 0;
+        }
+
+        /* hora */
+        #calendario > div[data-date] > div > p:first-of-type {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+        }
+
+        /* título */
+        #calendario > div[data-date] > div > p:nth-of-type(2) {
+            font-size: 0.73rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text);
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* ícones de ação */
+        #calendario > div[data-date] > div > span {
+            font-size: 0.7rem;
+            line-height: 1;
+            padding: 2px 3px;
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0.45;
+            filter: saturate(0.8);
+            transition: opacity 0.16s ease, transform 0.16s ease, background 0.16s ease, filter 0.16s ease;
+        }
+
+        #calendario > div[data-date] > div > span:hover {
+            opacity: 1;
+            filter: saturate(1);
+            transform: scale(1.14);
+            background: var(--icon-hover-bg);
+        }
+
+        /* --- evento confirmado --- */
+        #calendario .done {
+            text-decoration: line-through;
+            text-decoration-color: var(--text-faint);
+            text-decoration-thickness: 1px;
+            color: var(--text-faint);
+            opacity: 0.75;
+        }
+
+        /* ===========================================================
+           Modal — overlay escurecido + desfocado, cartão centralizado
+           O JS controla display: none / flex neste mesmo elemento.
+           =========================================================== */
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            background: var(--overlay);
+            backdrop-filter: blur(var(--blur-overlay)) saturate(115%);
+            -webkit-backdrop-filter: blur(var(--blur-overlay)) saturate(115%);
+        }
+
+        #modal form {
+            width: 100%;
+            max-width: var(--modal-w);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.9rem 1.75rem;
+            background: var(--modal-bg);
+            backdrop-filter: blur(var(--blur-modal)) saturate(130%);
+            -webkit-backdrop-filter: blur(var(--blur-modal)) saturate(130%);
+            border: 1px solid var(--modal-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        #modal .modal__titulo {
+            margin: 0 0 0.25rem;
+            font-family: var(--font-display);
+            font-weight: var(--fw-display);
+            font-size: 1.3rem;
+            color: var(--text);
+        }
+
+        #modal label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        #modal input {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+            padding: 0.62rem 0.75rem;
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            background: var(--input-bg);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            color-scheme: light dark;
+        }
+
+        #modal input:hover { border-color: var(--input-border-hover); }
+
+        #modal input:focus {
+            outline: none;
+            background: var(--input-bg-focus);
+            border-color: var(--focus-ring);
+            box-shadow: 0 0 0 3px var(--focus-ring-shadow-soft);
+        }
+
+        #modal #btn-salvar {
+            margin-top: 0.4rem;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--btn-primary-text);
+            padding: 0.72rem 1rem;
+            border: 1px solid var(--btn-primary-border);
+            border-radius: var(--radius-pill);
+            background: var(--btn-primary-bg);
+            box-shadow: 0 4px 14px var(--btn-primary-shadow);
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+        }
+
+        #modal #btn-salvar:hover {
+            filter: brightness(1.05);
+            box-shadow: 0 7px 20px var(--btn-primary-shadow-hover);
+            transform: translateY(-1px);
+        }
+
+        #modal #btn-salvar:active { transform: translateY(0); }
+
+        #modal #btn-salvar:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        /* ===========================================================
+           Rodapé
+           =========================================================== */
+        .credito {
+            max-width: 900px;
+            margin: 2rem auto 1.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--text-faint);
+        }
+
+        .credito a {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .credito a:hover {
+            color: var(--accent);
+        }
+
+        /* ===========================================================
+           Responsivo
+           =========================================================== */
+        /* faixa intermediária: aperta o espaçamento para a linha de ícones
+           do cartão não quebrar em duas linhas */
+        @media (min-width: 769px) and (max-width: 900px) {
+            .planner { padding-left: 1.25rem; padding-right: 1.25rem; }
+
+            #calendario { gap: 9px; }
+
+            #calendario > div:not(.cabecalho) { padding: 7px 6px; }
+
+            #calendario > div[data-date] > div { padding: 5px; gap: 1px 2px; }
+
+            #calendario > div[data-date] > div > span { padding: 2px; font-size: 0.66rem; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1.25rem 0.75rem 0.5rem; }
+
+            .planner { padding: 1.4rem 1.1rem 1.75rem; border-radius: 18px; }
+
+            #calendario { gap: 7px; }
+
+            #calendario > div:not(.cabecalho) { min-height: 78px; padding: 6px; font-size: 0.9rem; }
+
+            #calendario .cabecalho h2 { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 768px) {
+            #calendario { grid-template-columns: repeat(1, 1fr); gap: 9px; }
+
+            /* abaixo disso a grade de 7 colunas espreme demais o cartão:
+               vira lista de agenda, e os dias de preenchimento só criariam buracos */
+            #calendario > div:not([data-date]):not(.cabecalho) { display: none; }
+
+            #calendario > div[data-date] { min-height: 0; padding: 10px 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
