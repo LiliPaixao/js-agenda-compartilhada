@@ -176,11 +176,10 @@ function criarMes(ano, mes){
     for (let i = 1; i <= ultimoDia; i++) {
         //cria a div
         let div = document.createElement('div')
-
         //isso me daria os dias de 1 a 31
         //coloca o i dentro da div (i é o número = data)
         div.textContent = i
-        date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
+        let date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
         div.dataset.date = date
         //dates é array
         const dates = searchByDate(date) 
@@ -250,7 +249,9 @@ function criarMes(ano, mes){
 
               hourEvento.classList.toggle('done')
               titleEvento.classList.toggle('done')
-              porcentagemConfirmados(dates, div)
+              //atualiza o const dates da linha 185
+              const datesAtualizados = searchByDate(date)
+              porcentagemConfirmados(datesAtualizados, div)
             })
         })
         
