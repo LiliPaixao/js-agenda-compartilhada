@@ -29,13 +29,13 @@ function gerarID() {
     return proximoID++
 }
 
-function createEvent(title, event_date, created_by) {
+function createEvent(title, event_date, created_by, event_time) {
     if (!title || !event_date) {
         console.error('Título, data são obrigatórios')
         return
     }
     const id = gerarID()
-    const newEvent = { id, title, event_date,created_at: Date.now(), created_by}
+    const newEvent = { id, title, event_date,created_at: Date.now(), created_by, event_time}
     events = [...events, newEvent]
     saveEvent()
     return newEvent
@@ -324,11 +324,12 @@ let btnSalvar = document.querySelector('#btn-salvar')
                     event_time: modal.querySelector('input[name="event_time"]').value,
                     event_date: modal.querySelector('input[name="event_date"]').value
                 }
-
+            //sem id  = cria evento
             if(!modal.dataset.id){
                 createEvent(changes.title, changes.event_date, 'Liliane', changes.event_time)
             } else {
                 //converto id string para numero
+                //com id atualizo evento
                 let id = Number(modal.dataset.id)
                 updateEvent(id,changes)
             }
