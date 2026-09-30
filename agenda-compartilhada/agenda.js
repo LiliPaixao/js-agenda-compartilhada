@@ -153,6 +153,79 @@ function esc(string){
     return escape
 }
 
+// funçao igual ao foreach
+//evento.event_date vale date
+function criarCartaoEvento(evento, div){
+    //crio div
+    let divEvento = document.createElement('div')
+    //crio p hora
+    let hourEvento = document.createElement('p')
+    //coloco conteúdo do p dentro do p
+    hourEvento.textContent = `${evento.event_time ? evento.event_time : ''}`
+    hourEvento.classList.toggle('done', evento.status == "confirmado")
+    //coloco p dentro da div
+    divEvento.append(hourEvento)
+
+    //crio p título
+    let titleEvento = document.createElement('p')
+    titleEvento.textContent = `${evento.title ? evento.title : ''}`
+    titleEvento.classList.toggle('done', evento.status == "confirmado")
+    divEvento.append(titleEvento)
+
+    //crio span ícone excluir
+    let excluirEvento = document.createElement('span')
+    excluirEvento.textContent = '❌'
+    divEvento.append(excluirEvento)
+    
+    excluirEvento.addEventListener('click', function(){
+        deleteEvent(evento.id)
+        divEvento.remove()
+        const datesAtualizados = searchByDate(evento.event_date)
+        porcentagemConfirmados(datesAtualizados, div)
+
+    })
+
+    //crio span ícone editar
+    let editarEvento = document.createElement('span')
+    editarEvento.textContent = '✏️'
+    divEvento.append(editarEvento)
+
+    editarEvento.addEventListener('click', function(){
+        const modal = document.querySelector('#modal')
+        modal.style.display = 'flex';
+        //pega inputs
+        let inputTitulo = modal.querySelector('input[name="title"]')
+        let inputHora = modal.querySelector('input[name="event_time"]')
+        let inputData = modal.querySelector('input[name="event_date"]')
+
+        inputTitulo.value = `${evento.title ? evento.title : ''}`
+        inputHora.value = `${evento.event_time ? evento.event_time: ''}`
+        inputData.value = `${evento.event_date ? evento.event_date: ''}`
+
+        modal.dataset.id = evento.id
+    })
+
+    //crio span ícone confirmar
+    let confirmarEvento = document.createElement('span')
+    confirmarEvento.textContent = '✅'
+    divEvento.append(confirmarEvento)
+    div.append(divEvento)
+
+    confirmarEvento.addEventListener('click', function(){
+        let novoStatus = evento.status == 'confirmado' ? 'pendente' : 'confirmado'
+        //salva o estado no localstorage
+        let eventAtualizado = updateEvent(evento.id, {status: novoStatus})
+        //achar o id que foi clicado
+        eventAtualizado = events.find(n => n.id === evento.id)
+        evento = eventAtualizado
+
+        hourEvento.classList.toggle('done')
+        titleEvento.classList.toggle('done')
+        //atualiza o const dates da linha 185
+        const datesAtualizados = searchByDate(evento.event_date)
+        porcentagemConfirmados(datesAtualizados, div)
+    })
+}
 
 
 function criarMes(ano, mes){
@@ -180,79 +253,15 @@ function criarMes(ano, mes){
         //coloca o i dentro da div (i é o número = data)
         div.textContent = i
         let date = `${ano}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`
+        //cada div de dia recebe a data
         div.dataset.date = date
+        
         //dates é array
         const dates = searchByDate(date) 
         porcentagemConfirmados(dates, div)//pega os eventos desse dia específico
 
-        dates.forEach( evento =>{
-            //crio div
-            let divEvento = document.createElement('div')
-            //crio p hora
-            let hourEvento = document.createElement('p')
-            //coloco conteúdo do p dentro do p
-            hourEvento.textContent = `${evento.event_time ? evento.event_time : ''}`
-            hourEvento.classList.toggle('done', evento.status == "confirmado")
-            //coloco p dentro da div
-            divEvento.append(hourEvento)
-
-            //crio p título
-            let titleEvento = document.createElement('p')
-            titleEvento.textContent = `${evento.title ? evento.title : ''}`
-            titleEvento.classList.toggle('done', evento.status == "confirmado")
-            divEvento.append(titleEvento)
-
-            //crio span ícone excluir
-            let excluirEvento = document.createElement('span')
-            excluirEvento.textContent = '❌'
-            divEvento.append(excluirEvento)
-            
-            excluirEvento.addEventListener('click', function(){
-                deleteEvent(evento.id)
-                divEvento.remove()
-            })
-
-            //crio span ícone editar
-            let editarEvento = document.createElement('span')
-            editarEvento.textContent = '✏️'
-            divEvento.append(editarEvento)
-
-            editarEvento.addEventListener('click', function(){
-               const modal = document.querySelector('#modal')
-               modal.style.display = 'flex';
-               //pega inputs
-               let inputTitulo = modal.querySelector('input[name="title"]')
-               let inputHora = modal.querySelector('input[name="event_time"]')
-               let inputData = modal.querySelector('input[name="event_date"]')
-
-               inputTitulo.value = `${evento.title ? evento.title : ''}`
-               inputHora.value = `${evento.event_time ? evento.event_time: ''}`
-               inputData.value = `${evento.event_date ? evento.event_date: ''}`
-
-               modal.dataset.id = evento.id
-            })
-
-            //crio span ícone confirmar
-            let confirmarEvento = document.createElement('span')
-            confirmarEvento.textContent = '✅'
-            divEvento.append(confirmarEvento)
-            div.append(divEvento)
-
-            confirmarEvento.addEventListener('click', function(){
-              let novoStatus = evento.status == 'confirmado' ? 'pendente' : 'confirmado'
-              //salva o estado no localstorage
-              let eventAtualizado = updateEvent(evento.id, {status: novoStatus})
-              //achar o id que foi clicado
-              eventAtualizado = events.find(n => n.id === evento.id)
-              evento = eventAtualizado
-              console.log(evento)
-
-              hourEvento.classList.toggle('done')
-              titleEvento.classList.toggle('done')
-              //atualiza o const dates da linha 185
-              const datesAtualizados = searchByDate(date)
-              porcentagemConfirmados(datesAtualizados, div)
-            })
+        dates.forEach(evento => {
+            criarCartaoEvento(evento, div)
         })
         
         diasMes = [...diasMes, div]
@@ -326,19 +335,24 @@ let btnSalvar = document.querySelector('#btn-salvar')
                 }
             //sem id  = cria evento
             if(!modal.dataset.id){
-                createEvent(changes.title, changes.event_date, 'Liliane', changes.event_time)
+               let novoEvento = createEvent(changes.title, changes.event_date, 'Liliane', changes.event_time)
+               //busca pelo dia 2026-10-05
+                let dateEspecifica = calendario.querySelector(`div[data-date="${changes.event_date}"]`)
+
+                criarCartaoEvento(novoEvento,dateEspecifica)
+                const datesAtualizados = searchByDate(changes.event_date)
+                porcentagemConfirmados(datesAtualizados, dateEspecifica)
             } else {
                 //converto id string para numero
                 //com id atualizo evento
                 let id = Number(modal.dataset.id)
                 updateEvent(id,changes)
+                
+                //depois melhorar essa solução para recarregar a pg
+                location.reload()
             }
-
                 modal.style.display = 'none';
-
-            //depois melhorar essa solução para recarregar a pg
-            location.reload()
-})
+    })
 
 calendario.onclick = function(event) {
     //onde ocorre o click
