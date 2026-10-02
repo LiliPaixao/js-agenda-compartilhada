@@ -355,8 +355,11 @@ let btnSalvar = document.querySelector('#btn-salvar')
                 let id = Number(modal.dataset.id)
                 updateEvent(id,changes)
                 let cartao = calendario.querySelector(`div[data-id="${id}"]`)
+                let diaAntigo = cartao.parentElement
+                let eventosDiaAntigo = searchByDate(diaAntigo.dataset.date)
+
                 cartao.remove()
-                
+                porcentagemConfirmados(eventosDiaAntigo, diaAntigo)
                 //busca pelo dia 2026-10-05
                 let dateEspecifica = calendario.querySelector(`div[data-date="${changes.event_date}"]`)
 
