@@ -158,6 +158,8 @@ function esc(string){
 function criarCartaoEvento(evento, div){
     //crio div
     let divEvento = document.createElement('div')
+    let id = evento.id
+    divEvento.dataset.id = id
     //crio p hora
     let hourEvento = document.createElement('p')
     //coloco conteúdo do p dentro do p
@@ -260,6 +262,10 @@ function criarMes(ano, mes){
         const dates = searchByDate(date) 
         porcentagemConfirmados(dates, div)//pega os eventos desse dia específico
 
+        //onde surge o evento
+        //evento é um objeto do array events
+        //dates é um array de objetos(o que o searchByDate devolve
+        //forEach entrega um objeto por vez no evento = listEvents()
         dates.forEach(evento => {
             criarCartaoEvento(evento, div)
         })
@@ -342,14 +348,24 @@ let btnSalvar = document.querySelector('#btn-salvar')
                 criarCartaoEvento(novoEvento,dateEspecifica)
                 const datesAtualizados = searchByDate(changes.event_date)
                 porcentagemConfirmados(datesAtualizados, dateEspecifica)
+            //com id
             } else {
                 //converto id string para numero
                 //com id atualizo evento
                 let id = Number(modal.dataset.id)
                 updateEvent(id,changes)
+                let cartao = calendario.querySelector(`div[data-id="${id}"]`)
+                cartao.remove()
                 
-                //depois melhorar essa solução para recarregar a pg
-                location.reload()
+                //busca pelo dia 2026-10-05
+                let dateEspecifica = calendario.querySelector(`div[data-date="${changes.event_date}"]`)
+
+                let eventoAtualizado = events.find(n => n.id === id)
+
+                criarCartaoEvento(eventoAtualizado ,dateEspecifica)
+
+                const datesAtualizados = searchByDate(changes.event_date)
+                porcentagemConfirmados(datesAtualizados, dateEspecifica)
             }
                 modal.style.display = 'none';
     })
